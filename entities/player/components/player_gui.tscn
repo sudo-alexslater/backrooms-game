@@ -1,0 +1,137 @@
+[gd_scene load_steps=9 format=3 uid="uid://c6cbb2w3ynbx6"]
+
+[ext_resource type="Script" path="res://entities/player/components/player_gui.gd" id="1_g7aru"]
+[ext_resource type="Texture2D" uid="uid://pd8e03s2lfnh" path="res://ui/hud/resources/label_HP_bg.png" id="2_clfka"]
+[ext_resource type="Texture2D" uid="uid://bj1adihjt1lda" path="res://ui/hud/resources/label_HP.png" id="3_dq8lo"]
+[ext_resource type="Texture2D" uid="uid://c2nqj8dalwjns" path="res://ui/hud/resources/lifebar_bg.png" id="4_2t3dy"]
+[ext_resource type="Texture2D" uid="uid://orkbkejpc7s3" path="res://ui/hud/resources/lifebar_fill.png" id="5_lo8ls"]
+[ext_resource type="Texture2D" uid="uid://ccor2x0t87mmb" path="res://ui/hud/resources/label_EP.png" id="6_e5dds"]
+[ext_resource type="Texture2D" uid="uid://cjmej1txrqhmd" path="res://ui/hud/resources/energy_bar_bg.png" id="7_158ud"]
+[ext_resource type="Texture2D" uid="uid://dgacfhxf5c103" path="res://ui/hud/resources/energy_bar_fill.png" id="8_mwl81"]
+
+[node name="PlayerGUI" type="CanvasLayer"]
+script = ExtResource("1_g7aru")
+
+[node name="HUD" type="MarginContainer" parent="."]
+visible = false
+offset_right = 504.0
+offset_bottom = 97.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="Bars" type="VBoxContainer" parent="HUD"]
+layout_mode = 2
+
+[node name="Health" type="HBoxContainer" parent="HUD/Bars"]
+layout_mode = 2
+
+[node name="Count" type="MarginContainer" parent="HUD/Bars/Health"]
+layout_mode = 2
+
+[node name="Background" type="NinePatchRect" parent="HUD/Bars/Health/Count"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+texture = ExtResource("2_clfka")
+
+[node name="Title" type="TextureRect" parent="HUD/Bars/Health/Count/Background"]
+layout_mode = 2
+offset_right = 50.0
+offset_bottom = 40.0
+texture = ExtResource("3_dq8lo")
+expand_mode = 4
+stretch_mode = 3
+
+[node name="Number" type="Label" parent="HUD/Bars/Health/Count/Background"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "10"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Gauge" type="TextureProgressBar" parent="HUD/Bars/Health"]
+layout_mode = 2
+value = 50.0
+texture_under = ExtResource("4_2t3dy")
+texture_progress = ExtResource("5_lo8ls")
+
+[node name="Thirst" type="HBoxContainer" parent="HUD/Bars"]
+layout_mode = 2
+
+[node name="Count" type="MarginContainer" parent="HUD/Bars/Thirst"]
+layout_mode = 2
+
+[node name="Background" type="NinePatchRect" parent="HUD/Bars/Thirst/Count"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+texture = ExtResource("2_clfka")
+
+[node name="Title" type="TextureRect" parent="HUD/Bars/Thirst/Count/Background"]
+layout_mode = 2
+offset_right = 50.0
+offset_bottom = 40.0
+texture = ExtResource("6_e5dds")
+expand_mode = 4
+stretch_mode = 3
+
+[node name="Number" type="Label" parent="HUD/Bars/Thirst/Count/Background"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "10"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Gauge" type="TextureProgressBar" parent="HUD/Bars/Thirst"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+value = 50.0
+texture_under = ExtResource("7_158ud")
+texture_progress = ExtResource("8_mwl81")
+
+[node name="DeathScene" type="MarginContainer" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="DeathScene"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="DeathScene/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBox" type="VBoxContainer" parent="DeathScene/Panel/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="DeathTitle" type="Label" parent="DeathScene/Panel/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 55
+text = "You have died."
+horizontal_alignment = 1
+
+[node name="RespawnInstructions" type="Label" parent="DeathScene/Panel/MarginContainer/VBox"]
+layout_mode = 2
+text = "Press 'R' to try again."
+horizontal_alignment = 1

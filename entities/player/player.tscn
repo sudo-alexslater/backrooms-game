@@ -1,0 +1,114 @@
+[gd_scene load_steps=19 format=3 uid="uid://dqruebnitp4kg"]
+
+[ext_resource type="Script" path="res://entities/player/player.gd" id="1_7kss8"]
+[ext_resource type="Texture2D" uid="uid://cjr6gkr1j1h72" path="res://third_party/adventurer/Idle/idle.png" id="2_xbwp8"]
+[ext_resource type="PackedScene" uid="uid://1f1k5krvcb5o" path="res://entities/player/components/interactor_component.tscn" id="3_457of"]
+[ext_resource type="PackedScene" uid="uid://motype4xqypo" path="res://entities/components/health_component.tscn" id="4_eocks"]
+[ext_resource type="PackedScene" uid="uid://bde2700qt0aa" path="res://entities/components/thirst_component.tscn" id="13_m66di"]
+[ext_resource type="PackedScene" uid="uid://wvc3yjughluy" path="res://entities/player/components/player_inventory_component.tscn" id="15_rg2yv"]
+[ext_resource type="Script" path="res://items/data/inventory_data.gd" id="16_mi83r"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6lx2a"]
+atlas = ExtResource("2_xbwp8")
+region = Rect2(0, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8ssqs"]
+atlas = ExtResource("2_xbwp8")
+region = Rect2(48, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qo8tl"]
+atlas = ExtResource("2_xbwp8")
+region = Rect2(96, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qsffx"]
+atlas = ExtResource("2_xbwp8")
+region = Rect2(144, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s1y1k"]
+atlas = ExtResource("2_xbwp8")
+region = Rect2(192, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xjmjh"]
+atlas = ExtResource("2_xbwp8")
+region = Rect2(240, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rp4dk"]
+atlas = ExtResource("2_xbwp8")
+region = Rect2(288, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sc1ps"]
+atlas = ExtResource("2_xbwp8")
+region = Rect2(336, 0, 48, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_el3a4"]
+resource_name = "player"
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6lx2a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8ssqs")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qo8tl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qsffx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_s1y1k")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xjmjh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rp4dk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sc1ps")
+}],
+"loop": true,
+"name": &"idle_front",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_23tce"]
+size = Vector2(59, 112)
+
+[sub_resource type="Resource" id="Resource_w8tns"]
+script = ExtResource("16_mi83r")
+columns = 10
+rows = 4
+slots = Array[Resource("res://items/data/item_slot.gd")]([])
+
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_7kss8")
+
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+scale = Vector2(4, 4)
+sprite_frames = SubResource("SpriteFrames_el3a4")
+animation = &"idle_front"
+autoplay = "idle_front"
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+position = Vector2(3.5, -10)
+shape = SubResource("RectangleShape2D_23tce")
+
+[node name="Camera" type="Camera2D" parent="."]
+zoom = Vector2(0.25, 0.25)
+
+[node name="InteractorComponent" parent="." node_paths=PackedStringArray("thirst") instance=ExtResource("3_457of")]
+thirst = NodePath("../ThirstComponent")
+
+[node name="HealthComponent" parent="." instance=ExtResource("4_eocks")]
+
+[node name="ThirstComponent" parent="." node_paths=PackedStringArray("health") instance=ExtResource("13_m66di")]
+health = NodePath("../HealthComponent")
+
+[node name="PlayerInventoryComponent" parent="." instance=ExtResource("15_rg2yv")]
+inventory = SubResource("Resource_w8tns")
+
+[connection signal="health_changed" from="HealthComponent" to="." method="_on_health_changed"]
+[connection signal="health_depleted" from="HealthComponent" to="." method="_on_health_depleted"]
+[connection signal="thirst_changed" from="ThirstComponent" to="." method="_on_thirst_changed"]

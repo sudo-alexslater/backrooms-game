@@ -1,0 +1,53 @@
+[gd_scene load_steps=2 format=3 uid="uid://j7bag5fr6cwd"]
+
+[ext_resource type="Script" path="res://ui/main_menu/main_menu.gd" id="1_revph"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_revph")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -53.5
+offset_top = -68.0
+offset_right = 53.5
+offset_bottom = 68.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HostBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Host"
+
+[node name="ConnectBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Connect"
+
+[node name="DisconnectBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Disconnect"
+
+[node name="SinglePlayer" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Single Player"
+
+[node name="NameInput" type="TextEdit" parent="VBoxContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+placeholder_text = "Enter Name"
+
+[connection signal="pressed" from="VBoxContainer/HostBtn" to="." method="_on_host_btn_pressed"]
+[connection signal="pressed" from="VBoxContainer/ConnectBtn" to="." method="_on_connect_btn_pressed"]
+[connection signal="pressed" from="VBoxContainer/DisconnectBtn" to="." method="_on_disconnect_btn_pressed"]
+[connection signal="pressed" from="VBoxContainer/SinglePlayer" to="." method="_on_single_player_pressed"]
+[connection signal="text_changed" from="VBoxContainer/NameInput" to="." method="_on_name_text_changed"]

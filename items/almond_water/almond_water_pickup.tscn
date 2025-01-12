@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=3 uid="uid://cjr217kdhaqq5"]
+
+[ext_resource type="Script" path="res://items/almond_water/almond_water_pickup.gd" id="1_k0pq3"]
+[ext_resource type="PackedScene" uid="uid://b5ioc7ecjinyq" path="res://items/components/interactable_component.tscn" id="2_7lqov"]
+[ext_resource type="Texture2D" uid="uid://bokn83qwaslj2" path="res://levels/0/resources/almond_water.png" id="2_x8y5c"]
+
+[node name="AlmondWaterPickup" type="Node2D"]
+script = ExtResource("1_k0pq3")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+scale = Vector2(2, 2)
+texture = ExtResource("2_x8y5c")
+
+[node name="InteractionComponent" parent="." instance=ExtResource("2_7lqov")]

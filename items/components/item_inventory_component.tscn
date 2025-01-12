@@ -1,0 +1,48 @@
+[gd_scene load_steps=4 format=3 uid="uid://bktxyhtc0hg06"]
+
+[ext_resource type="Script" path="res://items/components/item_inventory_component.gd" id="1_li5f1"]
+[ext_resource type="PackedScene" uid="uid://b5ioc7ecjinyq" path="res://items/components/interactable_component.tscn" id="2_fmqba"]
+[ext_resource type="PackedScene" uid="uid://cjtvc6cvjittt" path="res://components/inventory_grid.tscn" id="3_2dugj"]
+
+[node name="ItemInventoryComponent" type="Node2D"]
+script = ExtResource("1_li5f1")
+
+[node name="Window" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="Panel" type="Panel" parent="Window"]
+z_index = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Window/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Window/Panel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 50
+
+[node name="Title" type="Label" parent="Window/Panel/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 65
+text = "Inventory"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBox" type="HBoxContainer" parent="Window/Panel/MarginContainer/VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="InventoryGrid" parent="Window/Panel/MarginContainer/VBox/HBox" instance=ExtResource("3_2dugj")]
+layout_mode = 2
+
+[node name="InteractableComponent" parent="." instance=ExtResource("2_fmqba")]
