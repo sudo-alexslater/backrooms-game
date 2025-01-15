@@ -38,3 +38,14 @@ func switch_scene(scene: GUIScene):
 	if scene == GUIScene.Death:
 		hide_HUD()
 		show_death()
+
+var open_dialogs: Dictionary = {}
+func dialog_has_opened(name: String):
+	open_dialogs[name] = true
+func dialog_has_closed(name: String):
+	open_dialogs[name] = false
+func has_open_dialog():
+	for dialog_name in open_dialogs:
+		if open_dialogs[dialog_name]:
+			return true
+	return false

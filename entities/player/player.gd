@@ -1,34 +1,48 @@
-extends CharacterBody2D
-class_name Player
+extends CharacterBody3D
 
 var thirst_component_node := preload("res://entities/components/thirst_component.tscn")
 var health_component_node := preload("res://entities/components/health_component.tscn")
-var interactor_component_node := preload("res://entities/player/components/interactor_component.tscn")
+var interactor_component_node := preload("res://entities/player/components/interactor_comp.tscn")
 var corpse_node := preload("res://entities/player/player_corpse.tscn")
 
-@export var SPEED := 600.0
+@export var SPEED := 1.0
 @export var is_local_player := true :
 	set(input):
 		is_local_player = input
 		if input == true:
 			$Camera.enabled = true
-			$InteractorComponent.monitoring = true
-			$InteractorComponent.monitorable = true
-			$PlayerInventoryComponent.inventory_gui_enabled = true
+			$InteractorComp.monitoring = true
+			$InteractorComp.monitorable = true
+			$PlayerInventoryComp.inventory_gui_enabled = true
 			reset_local_nodes()
 			PlayerGui.show()
 		else:
 			$Camera.enabled = false
-			$PlayerInventoryComponent.inventory_gui_enabled = false
+			$PlayerInventoryComp.inventory_gui_enabled = false
 			$ThirstComponent.queue_free()
 			$HealthComponent.queue_free()
-			$InteractorComponent.queue_free()
+			$InteractorComp.queue_free()
 	get:
 		return is_local_player
 @export var state: PlayerState = PlayerState.new()
 
+const mouse_sens := .002
+func _input(event):
+	if !is_local_player or PlayerGui.has_open_dialog():
+		return
+	if event.is_action_pressed("mouse_click"):
+		if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
+			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	if event.is_action_pressed("escape"):
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		rotate_y(-event.relative.x * mouse_sens)
+		$Camera.rotate_x(-event.relative.y * mouse_sens)
+		$Camera.rotation.x = clampf($Camera.rotation.x, -deg_to_rad(70), deg_to_rad(70))
+
 func _ready():
 	respawn.rpc()
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	
 func _physics_process(delta):
 	if is_local_player:
@@ -37,7 +51,7 @@ func _physics_process(delta):
 				respawn.rpc()
 		else:
 			# if not dead
-			calculate_movement()
+			calculate_movement(delta)
 		
 func reset_local_nodes():
 	if !get_node_or_null("ThirstComponent"):
@@ -49,7 +63,7 @@ func reset_local_nodes():
 		add_child(health_component)
 		$HealthComponent.health_changed.connect(PlayerGui.on_health_changed)
 		$HealthComponent.health_depleted.connect(PlayerGui.on_health_depleted)
-	if !get_node_or_null("InteractorComponent"):
+	if !get_node_or_null("InteractorComp"):
 		var interactor_component = interactor_component_node.instance()
 		add_child(interactor_component)
 
@@ -83,16 +97,15 @@ func respawn():
 		PlayerGui.reset()
 		$HealthComponent.reset()
 		$ThirstComponent.reset()
-		$InteractorComponent.monitoring = true
-		$PlayerInventoryComponent.inventory_gui_enabled = true
+		$InteractorComp.monitoring = true
+		$PlayerInventoryComp.inventory_gui_enabled = true
 		Logger.debug("Respawning local player and setting position to: " + str(spawnpoint.position))
 	else: 
 		Logger.debug("Respawning non-local player")
-	$Sprite.show()
-	$Sprite.play("idle_front")
+	$Mesh.show()
 
 func spawn_corpse():
-	var player_inventory: InventoryData = $PlayerInventoryComponent.inventory
+	var player_inventory: InventoryData = $PlayerInventoryComp.inventory
 	EntityService.spawn_entity.rpc("res://entities/player/player_corpse.tscn", position, {
 		"inventory": player_inventory.to_dict(),
 		"player_state": state.to_dict()
@@ -101,25 +114,34 @@ func spawn_corpse():
 
 func _on_health_depleted():
 	if is_local_player:
-		$InteractorComponent.monitoring = false
-		$PlayerInventoryComponent.inventory_gui_enabled = false
+		$InteractorComp.monitoring = false
+		$PlayerInventoryComp.inventory_gui_enabled = false
 		spawn_corpse()
 	else:
-		$Sprite.hide()
+		$Mesh.hide()
 
 # ==================
 # Position and movement
 # ==================
-func calculate_movement():
-	if not multiplayer.connected_to_server:
-		return
-	velocity.x = (Input.get_action_strength("move_right") - Input.get_action_strength("move_left")) * SPEED
-	velocity.y = (Input.get_action_strength("move_down") - Input.get_action_strength("move_up")) * SPEED
-	update_position.rpc(position)
+var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
+var speed = 5
+var jump_speed = 5
+func calculate_movement(delta):
+	#if not multiplayer.connected_to_server:
+		#return
+	velocity.y += -gravity * delta
+	var input = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	var movement_dir = transform.basis * Vector3(input.x, 0, input.y)
+	velocity.x = movement_dir.x * speed
+	velocity.z = movement_dir.z * speed
+
 	move_and_slide()
+	if is_on_floor() and Input.is_action_just_pressed("move_jump"):
+		velocity.y = jump_speed
+	update_position.rpc(position)
 	
 @rpc("unreliable_ordered", "any_peer")
-func update_position(input_position: Vector2):
+func update_position(input_position: Vector3):
 	position = input_position
 
 

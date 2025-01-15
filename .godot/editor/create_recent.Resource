@@ -1,0 +1,9 @@
+StandardMaterial3D
+InventoryData
+ItemData
+JSON
+Resource
+TileSet
+TileSetAtlasSource
+GDScript
+AtlasTexture

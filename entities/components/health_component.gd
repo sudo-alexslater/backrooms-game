@@ -45,5 +45,3 @@ func heal(amount: int):
 		new_hp = max_hp
 	health_changed.emit(hp, new_hp)
 	hp = new_hp
-
-

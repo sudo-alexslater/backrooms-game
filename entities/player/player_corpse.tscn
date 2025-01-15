@@ -1,15 +1,16 @@
-[gd_scene load_steps=6 format=3 uid="uid://b07117unmma2h"]
+[gd_scene load_steps=7 format=3 uid="uid://b07117unmma2h"]
 
 [ext_resource type="Texture2D" uid="uid://bsdca74d1gghf" path="res://third_party/images/skull.png" id="1_hx3ob"]
 [ext_resource type="Script" path="res://entities/player/player_corpse.gd" id="1_vlfu5"]
 [ext_resource type="PackedScene" uid="uid://bktxyhtc0hg06" path="res://items/components/item_inventory_component.tscn" id="3_mhwoq"]
 [ext_resource type="Script" path="res://items/data/inventory_data.gd" id="4_0ncac"]
+[ext_resource type="Script" path="res://items/data/item_slot.gd" id="5_gbs7e"]
 
 [sub_resource type="Resource" id="Resource_7pd4y"]
 script = ExtResource("4_0ncac")
 columns = 2
 rows = 2
-slots = Array[Resource("res://items/data/item_slot.gd")]([])
+slots = Array[ExtResource("5_gbs7e")]([])
 
 [node name="PlayerCorpse" type="Node2D"]
 script = ExtResource("1_vlfu5")

@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://djx0354ntne4o"]
+
+[ext_resource type="TileSet" uid="uid://sbxyabmmuira" path="res://levels/0_2d/resources/level_0_tileset.tres" id="1_j30d4"]
+[ext_resource type="PackedScene" uid="uid://c18k8bcaqoxc8" path="res://entities/spawning/2d_spawn_point.tscn" id="4_dg0ta"]
+
+[node name="game" type="Node2D"]
+
+[node name="Maze" type="TileMap" parent="."]
+z_index = -1
+scale = Vector2(12, 12)
+tile_set = ExtResource("1_j30d4")
+format = 2
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+position = Vector2(838, -34)
+metadata/_edit_group_ = true
+
+[node name="SpawnPoint" parent="SpawnPoints" instance=ExtResource("4_dg0ta")]
+position = Vector2(-417, -187)
+
+[node name="SpawnPoint2" parent="SpawnPoints" instance=ExtResource("4_dg0ta")]
+position = Vector2(148, 411)
+
+[node name="SpawnPoint3" parent="SpawnPoints" instance=ExtResource("4_dg0ta")]
+position = Vector2(774, -139)

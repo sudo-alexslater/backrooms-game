@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://d4i0b7c0bulfs"]
+[gd_scene load_steps=14 format=3 uid="uid://116iahjfsn6u"]
 
 [ext_resource type="Texture2D" uid="uid://bsdca74d1gghf" path="res://third_party/images/skull.png" id="2_v1owx"]
 [ext_resource type="Texture2D" uid="uid://cjr6gkr1j1h72" path="res://third_party/adventurer/Idle/idle.png" id="2_wuuju"]

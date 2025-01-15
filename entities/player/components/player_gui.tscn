@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://c6cbb2w3ynbx6"]
+[gd_scene load_steps=9 format=3 uid="uid://dti65q2gyj0ss"]
 
 [ext_resource type="Script" path="res://entities/player/components/player_gui.gd" id="1_g7aru"]
 [ext_resource type="Texture2D" uid="uid://pd8e03s2lfnh" path="res://ui/hud/resources/label_HP_bg.png" id="2_clfka"]

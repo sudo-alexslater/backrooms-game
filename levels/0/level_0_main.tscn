@@ -1,0 +1,32 @@
+[gd_scene load_steps=6 format=3 uid="uid://cfuo2wpjen7wk"]
+
+[ext_resource type="Material" uid="uid://bphc3vm8o7ro1" path="res://resources/materials/mat_prototype.tres" id="1_4eldi"]
+[ext_resource type="PackedScene" uid="uid://cy40oqo5kxgpt" path="res://entities/player/player.tscn" id="2_kw0l5"]
+[ext_resource type="PackedScene" uid="uid://leqiwba8re0" path="res://entities/spawning/spawn_point.tscn" id="3_wbjh1"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_w552e"]
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_apoai"]
+
+[node name="game" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(8.81491, 0, 0, 0, 1, 0, 0, 0, 8.70531, 0, 0, 0)
+mesh = SubResource("PlaneMesh_w552e")
+surface_material_override/0 = ExtResource("1_4eldi")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("WorldBoundaryShape3D_apoai")
+
+[node name="Player" parent="." instance=ExtResource("2_kw0l5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.40563, 0)
+
+[node name="SpawnPoints" type="Node3D" parent="."]
+
+[node name="SpawnPoint" parent="SpawnPoints" instance=ExtResource("3_wbjh1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.79172, 0, 6.83687)
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -0.379941, 0.925011, 0, -0.925011, -0.379941, 0, 6.3524, 0)
