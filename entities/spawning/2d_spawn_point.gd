@@ -1,5 +1,5 @@
 extends Node2D
-class_name SpawnPoint
+class_name SpawnPoint2D
 
 enum SpawnPointType {
 	Enemy,
@@ -10,5 +10,5 @@ enum SpawnPointType {
 var type: SpawnPointType = SpawnPointType.Player
 
 # Called when the node enters the scene tree for the first time.
-func _ready():
-	EntityService.register_spawnpoint(self)
+#func _ready():
+	#EntityService.register_spawnpoint(self)

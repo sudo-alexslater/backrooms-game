@@ -1,27 +1,15 @@
-[gd_scene load_steps=10 format=3 uid="uid://cfuo2wpjen7wk"]
+[gd_scene load_steps=7 format=3 uid="uid://cfuo2wpjen7wk"]
 
 [ext_resource type="Material" uid="uid://bphc3vm8o7ro1" path="res://resources/materials/mat_prototype.tres" id="1_4eldi"]
 [ext_resource type="PackedScene" uid="uid://cy40oqo5kxgpt" path="res://entities/player/player.tscn" id="2_kw0l5"]
 [ext_resource type="PackedScene" uid="uid://leqiwba8re0" path="res://entities/spawning/spawn_point.tscn" id="3_wbjh1"]
-[ext_resource type="PackedScene" uid="uid://cv0j6ptn0ppwq" path="res://environment/SM_level0_wall/SM_level0_wall.blend" id="5_de7mc"]
-
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_u8gxr"]
-
-[sub_resource type="Sky" id="Sky_u5t73"]
-sky_material = SubResource("ProceduralSkyMaterial_u8gxr")
-
-[sub_resource type="Environment" id="Environment_bvafs"]
-background_mode = 2
-sky = SubResource("Sky_u5t73")
-tonemap_mode = 2
-tonemap_white = 5.98
+[ext_resource type="PackedScene" uid="uid://bhp1mvu8cjtpp" path="res://environment/M_shipping_container/M_shipping_container.blend" id="4_mu2kn"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_w552e"]
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_apoai"]
 
-[node name="game" type="WorldEnvironment"]
-environment = SubResource("Environment_bvafs")
+[node name="game" type="Node3D"]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(8.81491, 0, 0, 0, 1, 0, 0, 0, 8.70531, 0, 0, 0)
@@ -41,9 +29,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.40563, 0)
 [node name="SpawnPoint" parent="SpawnPoints" instance=ExtResource("3_wbjh1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.79172, 0, 6.83687)
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.720869, 0.478733, 0.501161, -0.251598, -0.493013, 0.832848, 0.645791, -0.726466, -0.23495, 0, 7.59204, 0)
-shadow_enabled = true
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.928408, 0.141172, -0.343699, 0.371562, -0.35274, 0.858787, 0, -0.925011, -0.379941, 0, 6.3524, -7.56295)
 
-[node name="SM_level0_wall" parent="." instance=ExtResource("5_de7mc")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.83254, 0, -1.0102)
+[node name="M_shipping_container" parent="." instance=ExtResource("4_mu2kn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.55832, 0, 4.17829)
