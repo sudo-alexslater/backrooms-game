@@ -1,7 +1,9 @@
 [gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://bphc3vm8o7ro1"]
 
-[ext_resource type="Texture2D" uid="uid://ds52eiw73tq82" path="res://resources/textures/kenney_prototype_textures/light/texture_13.png" id="1_ut6pf"]
+[ext_resource type="Texture2D" uid="uid://clvsexkcuceer" path="res://resources/textures/environment/carpet.jpg" id="1_2aevd"]
 
 [resource]
-albedo_color = Color(0.360784, 0.356863, 0.498039, 1)
-albedo_texture = ExtResource("1_ut6pf")
+albedo_texture = ExtResource("1_2aevd")
+albedo_texture_force_srgb = true
+uv1_triplanar = true
+uv1_world_triplanar = true

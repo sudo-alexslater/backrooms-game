@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=3 uid="uid://b4n07hywjpshn"]
+
+[ext_resource type="PackedScene" uid="uid://cv0j6ptn0ppwq" path="res://environment/SM_level0_wall/SM_level0_wall.blend" id="1_lrsib"]
+[ext_resource type="Script" path="res://levels/0/environment/level_0_cell.gd" id="2_6irem"]
+
+[node name="SM_level0_wall" instance=ExtResource("1_lrsib")]
+script = ExtResource("2_6irem")

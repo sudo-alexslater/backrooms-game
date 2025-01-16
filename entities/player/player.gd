@@ -5,7 +5,7 @@ var health_component_node := preload("res://entities/components/health_component
 var interactor_component_node := preload("res://entities/player/components/interactor_comp.tscn")
 var corpse_node := preload("res://entities/player/player_corpse.tscn")
 
-@export var SPEED := 1.0
+@export var SPEED := 5.0
 @export var is_local_player := true :
 	set(input):
 		is_local_player = input
@@ -38,7 +38,7 @@ func _input(event):
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		rotate_y(-event.relative.x * mouse_sens)
 		$Camera.rotate_x(-event.relative.y * mouse_sens)
-		$Camera.rotation.x = clampf($Camera.rotation.x, -deg_to_rad(70), deg_to_rad(70))
+		#$Camera.rotation.x = clampf($Camera.rotation.x, -deg_to_rad(70), deg_to_rad(70))
 
 func _ready():
 	respawn.rpc()
@@ -91,15 +91,15 @@ func to_dict():
 @rpc("any_peer", "call_local")
 func respawn():
 	if is_local_player: 
-		var spawnpoint = await EntityService.get_random_spawnpoint()
-		position.x = spawnpoint.position.x
-		position.y = spawnpoint.position.y
+		#var spawnpoint = await EntityService.get_random_spawnpoint()
+		#position.x = spawnpoint.position.x
+		#position.y = spawnpoint.position.y
 		PlayerGui.reset()
 		$HealthComponent.reset()
 		$ThirstComponent.reset()
 		$InteractorComp.monitoring = true
 		$PlayerInventoryComp.inventory_gui_enabled = true
-		Logger.debug("Respawning local player and setting position to: " + str(spawnpoint.position))
+		#Logger.debug("Respawning local player and setting position to: " + str(spawnpoint.position))
 	else: 
 		Logger.debug("Respawning non-local player")
 	$Mesh.show()
@@ -125,7 +125,7 @@ func _on_health_depleted():
 # ==================
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 var speed = 5
-var jump_speed = 5
+var jump_speed = 2
 func calculate_movement(delta):
 	#if not multiplayer.connected_to_server:
 		#return
@@ -134,10 +134,15 @@ func calculate_movement(delta):
 	var movement_dir = transform.basis * Vector3(input.x, 0, input.y)
 	velocity.x = movement_dir.x * speed
 	velocity.z = movement_dir.z * speed
-
+	
 	move_and_slide()
-	if is_on_floor() and Input.is_action_just_pressed("move_jump"):
+	
+	#if Input.is_action_just_pressed("move_shift"):
+		#velocity.y = -jump_speed
+	if Input.is_action_just_pressed("move_jump"):
 		velocity.y = jump_speed
+	#if Input.is_action_just_released("move_jump") or Input.is_action_just_released("move_shift"): 
+		#velocity.y = 0
 	update_position.rpc(position)
 	
 @rpc("unreliable_ordered", "any_peer")
