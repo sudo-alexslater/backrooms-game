@@ -2,7 +2,6 @@ extends Node
 
 var player: CharacterBody3D
 var maze: Node2D
-var lootbox := preload("res://items/loot_box/loot_box.tscn")
 var wall := preload("res://levels/0/environment/level_0_cell.tscn")
 
 # Called once per tick
@@ -20,7 +19,7 @@ func _process(_delta):
 # ==================
 # Chunk Generation
 # ==================
-var chunk_size := 50
+var chunk_size := 25
 var room_size := 20
 var tile_size := 4
 var view_distance := 1
@@ -44,8 +43,12 @@ func get_blank_region() -> Dictionary:
 				"is_loot_tile": false
 			}
 	return out
-func spawn_loot(at: Vector2):
-	EntityService.spawn_entity("res://items/loot_box/loot_box.tscn", at, {})
+func spawn_loot(at: Vector3):
+	EntityService.add_entity({
+		"guid": IDService.v4(),
+		"initial_position": at,
+		"node_path": "res://entities/inventories/filing_cabinet.tscn"
+	})
 
 # --- chunks ---
 # locate the player position and render the chunks in view distance
@@ -107,7 +110,8 @@ func load_chunk(x: int, y: int, chunk_data: Array):
 			wall_node.position = Vector3(pos_x, 0, pos_y)
 			wall_node.wall_type = 3
 			get_node("/root/game/Map").add_child(wall_node)
-	
+		if cell.is_loot_tile:
+			spawn_loot(Vector3(pos_x, 0, pos_y))
 	# set loading flags
 	is_loaded[chunk_id] = true
 	is_loading[chunk_id] = false
@@ -180,9 +184,6 @@ func blobby_divide_region(chunk_data: Array, in_region: Dictionary = get_blank_r
 		item.east_wall = east
 		item.south_wall = south
 		item.west_wall = west
-		
-		if north and east and south and west:
-			print(get_cell_id(item.x, item.y) + ": " + str(north) + str(east) + str(south) + str(west))
 		
 		if north + east + south + west > 0:
 			new_walls.push_back(item)

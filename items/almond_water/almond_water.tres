@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3 uid="uid://d17gtd5juqomb"]
-
-[ext_resource type="Texture2D" uid="uid://birky16wcyavb" path="res://third_party/dungeon-assets/tile087.png" id="1_218dy"]
-[ext_resource type="Script" path="res://items/data/item_data.gd" id="1_a3byg"]
-
-[resource]
-script = ExtResource("1_a3byg")
-formatted_name = "Almond Water"
-icon = ExtResource("1_218dy")

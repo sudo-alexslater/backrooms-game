@@ -1,4 +1,4 @@
-extends Node
+extends Node3D
 class_name ItemInventoryComponent
 
 signal item_selected(slot: ItemSlot, interactor: Node)
@@ -28,10 +28,14 @@ func refresh(inventory_dict: Dictionary = {}):
 	title.text = inventory_text
 
 func open():
+	PlayerGui.dialog_has_opened("player_inventory")
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	$Window.show()	
 	
 func close():
 	interacting_entity = null
+	PlayerGui.dialog_has_closed("player_inventory")
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	$Window.hide()
 
 func interact(interactor: Node): 

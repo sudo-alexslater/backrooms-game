@@ -1,17 +1,18 @@
-[gd_scene load_steps=10 format=3 uid="uid://cfuo2wpjen7wk"]
+[gd_scene load_steps=9 format=3 uid="uid://cfuo2wpjen7wk"]
 
-[ext_resource type="PackedScene" uid="uid://cy40oqo5kxgpt" path="res://entities/player/player.tscn" id="2_kw0l5"]
+[ext_resource type="Script" path="res://levels/0/level_0_main.gd" id="1_7uhvg"]
 [ext_resource type="Texture2D" uid="uid://d1fva5jyvtlon" path="res://resources/textures/environment/ceiling.jpg" id="3_iiie4"]
-[ext_resource type="PackedScene" uid="uid://leqiwba8re0" path="res://entities/spawning/spawn_point.tscn" id="3_wbjh1"]
 [ext_resource type="Texture2D" uid="uid://clvsexkcuceer" path="res://resources/textures/environment/carpet.jpg" id="4_5n7qy"]
 
 [sub_resource type="Environment" id="Environment_bvafs"]
+background_mode = 1
+background_color = Color(0.658824, 0.584314, 0.160784, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.811765, 0.768627, 0.490196, 1)
-ambient_light_energy = 0.4
+ambient_light_color = Color(0.980286, 0.942234, 0.735394, 1)
 tonemap_mode = 2
-tonemap_exposure = 2.0
-tonemap_white = 6.98
+tonemap_white = 10.56
+fog_enabled = true
+fog_light_color = Color(0.568627, 0.482353, 0.141176, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_w552e"]
 
@@ -30,14 +31,7 @@ uv1_world_triplanar = true
 
 [node name="game" type="WorldEnvironment"]
 environment = SubResource("Environment_bvafs")
-
-[node name="1" parent="." instance=ExtResource("2_kw0l5")]
-transform = Transform3D(0.99995, 0.00504888, 0.00858909, -0.00506424, 0.999986, 0.0017689, -0.00858004, -0.00181229, 0.999961, -6.65405, 1.38763, -0.00075531)
-
-[node name="SpawnPoints" type="Node3D" parent="."]
-
-[node name="SpawnPoint" parent="SpawnPoints" instance=ExtResource("3_wbjh1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.79172, 0, 6.83687)
+script = ExtResource("1_7uhvg")
 
 [node name="Map" type="Node3D" parent="."]
 
@@ -53,7 +47,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_6uajd")
 shape = SubResource("WorldBoundaryShape3D_ttrkl")
 
 [node name="Floor" type="MeshInstance3D" parent="Map"]
-transform = Transform3D(221.705, 0, 0, 0, 1, 0, 0, 0, 210.865, 0.0374966, 0, 0.00444031)
+transform = Transform3D(221.705, 0, 0, 0, 1, 0, 0, 0, 210.865, 0.0145841, -0.00770259, -0.127506)
 mesh = SubResource("PlaneMesh_w552e")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_xycl5")
@@ -63,5 +57,5 @@ surface_material_override/0 = SubResource("StandardMaterial3D_xycl5")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Map/Floor/StaticBody3D"]
 shape = SubResource("WorldBoundaryShape3D_ttrkl")
 
-[node name="Camera3D" type="Camera3D" parent="."]
+[node name="PreviewCamera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 17.3615, 115.763, 27.8847)

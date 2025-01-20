@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cg2tmg0wj41vj"
-path.s3tc="res://.godot/imported/shi_unpack.png-3848e4c0f50eb736ef00fbf565119231.s3tc.ctex"
+uid="uid://bvketwiy0q21c"
+path.s3tc="res://.godot/imported/T_filecab_01.png-a76fb46dde4216f751dcbb10c0744994.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://environment/M_shipping_container/shi_unpack.png"
-dest_files=["res://.godot/imported/shi_unpack.png-3848e4c0f50eb736ef00fbf565119231.s3tc.ctex"]
+source_file="res://environment/SM_filingcab/T_filecab_01.png"
+dest_files=["res://.godot/imported/T_filecab_01.png-a76fb46dde4216f751dcbb10c0744994.s3tc.ctex"]
 
 [params]
 

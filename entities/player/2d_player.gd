@@ -1,5 +1,5 @@
 extends CharacterBody2D
-class_name Player
+class_name Player2D
 
 var thirst_component_node := preload("res://entities/components/thirst_component.tscn")
 var health_component_node := preload("res://entities/components/health_component.tscn")

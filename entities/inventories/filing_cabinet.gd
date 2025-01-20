@@ -1,4 +1,5 @@
-extends Node2D
+extends Node3D
+
 
 func _ready():
 	# generate up to 10 random items, but at least 2
@@ -11,7 +12,7 @@ func _ready():
 		}))
 func _on_item_selected(slot: ItemSlot, interactor: Node):
 	# if the interactor has an inventory component transfer into it
-	var component: Node = get_node_or_null(str(interactor.get_path()) + "/PlayerInventoryComponent")
+	var component: Node = get_node_or_null(str(interactor.get_path()) + "/PlayerInventoryComp")
 	if component:
 		component.inventory.add_slot(slot)
 		$ItemInventoryComponent.inventory.remove_slot_with_id(slot.item.guid)

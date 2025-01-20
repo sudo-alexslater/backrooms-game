@@ -20,7 +20,17 @@ var all_item_datas: Dictionary = {
 		"guid": ""
 	}
 }
-var items: Dictionary = {}
+var items: Dictionary = {
+	"123": ItemData.new({
+		"quantity": 10,
+		"stackable": true,
+		"max_stack": 16,
+		"formatted_name": "Medal",
+		"icon_path": "res://items/resources/medal.png",
+		"item_id": "medal",
+		"guid": "123"
+	})
+}
 func get_items_serialised() -> Dictionary:
 	var serialised_items = {}
 	for item in items:

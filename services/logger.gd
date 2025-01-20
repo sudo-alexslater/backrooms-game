@@ -2,6 +2,8 @@ extends Node
 
 var multiplayer_prefix: String :
 	get:
+		if not multiplayer.connected_to_server:
+			return "[SP]"
 		return "[" + str(multiplayer.get_unique_id()) + "]"
 var debug_prefix : String : 
 	get:

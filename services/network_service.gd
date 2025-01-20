@@ -15,7 +15,7 @@ const port = 9009
 
 func load_map():
 	# less delay with change to packed
-	get_tree().change_scene_to_packed(load('res://levels/0/main.tscn'))
+	get_tree().change_scene_to_packed(load('res://levels/0/level_0_main.tscn'))
 	# short await to allow scene to fully change
 	await get_tree().create_timer(0.2).timeout
 func host_server():

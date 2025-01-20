@@ -2,13 +2,12 @@
 
 [ext_resource type="Script" path="res://items/components/interactable_component.gd" id="1_gykjy"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_qoq1x"]
-radius = 50.0
+[sub_resource type="SphereShape3D" id="SphereShape3D_h4ivi"]
 
-[node name="InteractableComponent" type="Area2D"]
+[node name="InteractableComponent" type="Area3D"]
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("1_gykjy")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_qoq1x")
+[node name="InteractionAreaShape" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_h4ivi")

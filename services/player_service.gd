@@ -8,7 +8,7 @@ signal local_player_state_changed(state)
 		local_player_name = input
 		send_local_player_state()
 
-var player = preload("res://entities/player/player.tscn");
+var player := preload("res://entities/player/player.tscn");
 
 func _ready():
 	NetworkService.connected_to_game.connect(send_local_player_state)

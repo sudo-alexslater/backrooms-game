@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="The Backrooms Online"
-run/main_scene="res://levels/0/level_0_main.tscn"
+run/main_scene="res://ui/main_menu/main_menu.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon="res://items/resources/bones.png"
 

@@ -1,0 +1,32 @@
+[gd_scene load_steps=8 format=3 uid="uid://cmkwjxqu07kml"]
+
+[ext_resource type="PackedScene" uid="uid://dbn7jmqtor57b" path="res://environment/SM_filingcab/SM_filingcab.blend" id="1_n603j"]
+[ext_resource type="Script" path="res://entities/inventories/filing_cabinet.gd" id="2_mt7l7"]
+[ext_resource type="PackedScene" uid="uid://bktxyhtc0hg06" path="res://items/components/item_inventory_component.tscn" id="2_ytg18"]
+[ext_resource type="Script" path="res://items/data/inventory_data.gd" id="3_jgh55"]
+[ext_resource type="Script" path="res://items/data/item_slot.gd" id="4_tjuky"]
+
+[sub_resource type="Resource" id="Resource_a70ho"]
+script = ExtResource("4_tjuky")
+item_guid = "123"
+row = 0
+col = 0
+
+[sub_resource type="Resource" id="Resource_uxgtv"]
+script = ExtResource("3_jgh55")
+columns = 5
+rows = 2
+slots = Array[ExtResource("4_tjuky")]([SubResource("Resource_a70ho")])
+
+[node name="SM_filingcab_01" instance=ExtResource("1_n603j")]
+script = ExtResource("2_mt7l7")
+
+[node name="Cube" parent="." index="0"]
+transform = Transform3D(0.363239, 0, 0, 0, 0.363239, 0, 0, 0, 0.363239, 0, 0.361394, 0.2)
+
+[node name="ItemInventoryComponent" parent="." index="1" instance=ExtResource("2_ytg18")]
+transform = Transform3D(2.90283, 0, 0, 0, 2.90283, 0, 0, 0, 2.90283, 0, 0, 0)
+inventory = SubResource("Resource_uxgtv")
+inventory_text = "Filing Cabinet"
+
+[connection signal="item_selected" from="ItemInventoryComponent" to="." method="_on_item_selected"]

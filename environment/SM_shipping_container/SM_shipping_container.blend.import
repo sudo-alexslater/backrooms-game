@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://bhp1mvu8cjtpp"
-path="res://.godot/imported/M_shipping_container.blend-850766581f73c7892c5a52b4c8cdc2c9.scn"
+path="res://.godot/imported/SM_shipping_container.blend-a4a856dc4492d9927bc6316ff1b1c769.scn"
 
 [deps]
 
-source_file="res://environment/M_shipping_container/M_shipping_container.blend"
-dest_files=["res://.godot/imported/M_shipping_container.blend-850766581f73c7892c5a52b4c8cdc2c9.scn"]
+source_file="res://environment/SM_shipping_container/SM_shipping_container.blend"
+dest_files=["res://.godot/imported/SM_shipping_container.blend-a4a856dc4492d9927bc6316ff1b1c769.scn"]
 
 [params]
 

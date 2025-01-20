@@ -42,8 +42,8 @@ func close():
 	PlayerGui.dialog_has_closed("player_inventory")
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
-func on_slot_selected(item_id: String):
-	print("[?] Item selected: ", item_id)
+func on_slot_selected(item: ItemSlot):
+	Logger.debug("Item selected: " + item.item_guid)
 
 func on_inventory_updated():
 	refresh.rpc(inventory.to_dict())

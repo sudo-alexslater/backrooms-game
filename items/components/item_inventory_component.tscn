@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://b5ioc7ecjinyq" path="res://items/components/interactable_component.tscn" id="2_fmqba"]
 [ext_resource type="PackedScene" uid="uid://cjtvc6cvjittt" path="res://components/inventory_grid.tscn" id="3_2dugj"]
 
-[node name="ItemInventoryComponent" type="Node2D"]
+[node name="ItemInventoryComponent" type="Node3D"]
 script = ExtResource("1_li5f1")
 
 [node name="Window" type="CanvasLayer" parent="."]
