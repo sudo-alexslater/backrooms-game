@@ -5,7 +5,7 @@ extends Node
 # ------------------------------
 var entities: Dictionary = {}
 func get_entities_serialised() -> Array[Dictionary]:
-	var entities_as_dict = []
+	var entities_as_dict: Array[Dictionary] = []
 	for entity in entities.values():
 		entities_as_dict.push_back(entity.to_dict())
 	return entities_as_dict
@@ -18,6 +18,7 @@ func spawn_entity(state: EntityState):
 	var new_node := state.node.instantiate()
 	new_node.position = state.initial_position
 	new_node.name = state.guid
+	new_node.init(state)
 	get_node("/root/game").add_child(new_node)
 @rpc("call_local", "authority")
 func update_entity_list(new_entities: Array[Dictionary]):
@@ -36,7 +37,7 @@ func fetch_entity_list():
 	update_entity_list.rpc(get_entities_serialised())
 @rpc("call_local", "any_peer")
 func add_entity(state_dict: Dictionary): 
-	if !multiplayer.is_server():
+	if !NetworkService.is_authority():
 		Logger.error("Non server attempted to add entity")
 		return
 	var state = EntityState.new(state_dict)
@@ -45,7 +46,7 @@ func add_entity(state_dict: Dictionary):
 	update_entity_list.rpc(get_entities_serialised())
 @rpc("call_local", "any_peer")
 func remove_entity(guid: String): 
-	if !multiplayer.is_server():
+	if !NetworkService.is_authority():
 		Logger.error("Non server attempted to remove entity")
 		return
 	entities.erase(guid)

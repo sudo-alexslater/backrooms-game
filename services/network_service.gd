@@ -45,3 +45,7 @@ func _on_server_disconnected() -> void:
 	peer.close()
 	is_connected_to_game = false
 	Logger.debug("Server disconnected")
+	
+func is_authority():
+	var id = multiplayer.get_unique_id()
+	return id == 1 or id == 0

@@ -64,7 +64,7 @@ func render_chunks():
 # load chunk on server
 @rpc("any_peer", "call_local")
 func request_chunk(x: int, y: int):
-	if !multiplayer.is_server():
+	if !NetworkService.is_authority():
 		return
 	if chunk_data.has(get_cell_id(x, y)):
 		load_chunk.rpc(x, y, chunk_data[get_cell_id(x, y)])
@@ -110,7 +110,8 @@ func load_chunk(x: int, y: int, chunk_data: Array):
 			wall_node.position = Vector3(pos_x, 0, pos_y)
 			wall_node.wall_type = 3
 			get_node("/root/game/Map").add_child(wall_node)
-		if cell.is_loot_tile:
+			# todo: how am i going to make the server do this but not spawn it everywhere
+		if cell.is_loot_tile and NetworkService.is_authority():
 			spawn_loot(Vector3(pos_x, 0, pos_y))
 	# set loading flags
 	is_loaded[chunk_id] = true

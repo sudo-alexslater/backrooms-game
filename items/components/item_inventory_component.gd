@@ -13,7 +13,8 @@ var interacting_entity: Node
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	close()
-	refresh.rpc(inventory.to_dict())
+	if NetworkService.is_authority():
+		refresh.rpc(inventory.to_dict())
 	
 func _process(delta):
 	if Input.is_action_just_pressed("escape") && $Window.visible:

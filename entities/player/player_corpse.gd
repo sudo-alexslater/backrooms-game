@@ -20,10 +20,10 @@ func _on_item_selected(slot, interactor):
 # ==================
 # Entity System
 # ==================
-func init(from_dict: Dictionary = {}):
-	if !from_dict.is_empty():
-		if from_dict.has("player_state"):
-			player_state = PlayerState.new(from_dict.player_state)
-		if from_dict.has("inventory"):
-			$ItemInventoryComponent.inventory = InventoryData.new(from_dict.inventory)
+func init(state: EntityState):
+	var options := state.options
+	if options.has("player_state"):
+		player_state = PlayerState.new(options.player_state)
+	if state.options.has("inventory"):
+		$ItemInventoryComponent.inventory = InventoryData.new(options.inventory)
 	

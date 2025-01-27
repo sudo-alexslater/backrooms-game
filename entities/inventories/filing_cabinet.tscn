@@ -22,10 +22,10 @@ slots = Array[ExtResource("4_tjuky")]([SubResource("Resource_a70ho")])
 script = ExtResource("2_mt7l7")
 
 [node name="Cube" parent="." index="0"]
-transform = Transform3D(0.363239, 0, 0, 0, 0.363239, 0, 0, 0, 0.363239, 0, 0.361394, 0.2)
+transform = Transform3D(0.363239, 0, 0, 0, 0.363239, 0, 0, 0, 0.363239, 0, 0.359007, 0)
 
 [node name="ItemInventoryComponent" parent="." index="1" instance=ExtResource("2_ytg18")]
-transform = Transform3D(2.90283, 0, 0, 0, 2.90283, 0, 0, 0, 2.90283, 0, 0, 0)
+transform = Transform3D(2.90283, 0, 0, 0, 2.90283, 0, 0, 0, 2.90283, 0, 0.688842, 0)
 inventory = SubResource("Resource_uxgtv")
 inventory_text = "Filing Cabinet"
 

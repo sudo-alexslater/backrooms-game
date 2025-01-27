@@ -3,13 +3,14 @@ extends Node3D
 
 func _ready():
 	# generate up to 10 random items, but at least 2
-	for indx in randi_range(2, 10):
-		var random_item_guid = ItemService.new_random_item()
-		$ItemInventoryComponent.inventory.add_slot(ItemSlot.new({
-			"row": 0, 
-			"col": 0,
-			"item_guid": random_item_guid
-		}))
+	if NetworkService.is_authority():
+		for indx in randi_range(2, 10):
+			var random_item_guid = ItemService.new_random_item()
+			$ItemInventoryComponent.inventory.add_slot(ItemSlot.new({
+				"row": 0, 
+				"col": 0,
+				"item_guid": random_item_guid
+			}))
 func _on_item_selected(slot: ItemSlot, interactor: Node):
 	# if the interactor has an inventory component transfer into it
 	var component: Node = get_node_or_null(str(interactor.get_path()) + "/PlayerInventoryComp")
@@ -19,5 +20,7 @@ func _on_item_selected(slot: ItemSlot, interactor: Node):
 	else:
 		print("ERROR: interactor does not have a player inventory component")
 
-func init(options: Dictionary): 
-	pass
+func init(state: EntityState):
+	var options := state.options
+	if state.options.has("inventory"):
+		$ItemInventoryComponent.inventory = InventoryData.new(options.inventory)

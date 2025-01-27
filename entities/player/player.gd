@@ -27,7 +27,10 @@ var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 			$InteractorComp.queue_free()
 	get:
 		return is_local_player
-@export var state: PlayerState = PlayerState.new()
+@export var state: PlayerState = PlayerState.new() : 
+	set(new_state):
+		state = new_state
+		$Name.text = state.name
 
 func _ready():
 	respawn.rpc()
@@ -59,12 +62,12 @@ func reset_local_nodes():
 # ==================
 # Entity System
 # ==================
-func init(from_dict: Dictionary = {}): 
-	if !from_dict.is_empty():
-		if from_dict.has("state"):
-			state = PlayerState.new(from_dict.state)
-		if from_dict.has("is_local_player"):
-			is_local_player = from_dict.is_local_player
+func init(init_state: EntityState): 
+	var options = init_state.options
+	if options.has("state"):
+		state = PlayerState.new(options.state)
+	if options.has("is_local_player"):
+		is_local_player = options.is_local_player
 func to_dict(): 
 	return {
 		"is_local_player": is_local_player,
