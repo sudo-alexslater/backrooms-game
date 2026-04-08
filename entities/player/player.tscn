@@ -1,12 +1,10 @@
-[gd_scene load_steps=12 format=3 uid="uid://cy40oqo5kxgpt"]
+[gd_scene load_steps=9 format=3 uid="uid://cy40oqo5kxgpt"]
 
 [ext_resource type="Script" path="res://entities/player/player.gd" id="1_7kss8"]
 [ext_resource type="PackedScene" uid="uid://motype4xqypo" path="res://entities/components/health_component.tscn" id="4_eocks"]
 [ext_resource type="PackedScene" uid="uid://ciyc0jjrvacx4" path="res://entities/player/components/interactor_comp.tscn" id="5_6jaul"]
 [ext_resource type="PackedScene" uid="uid://wvc3yjughluy" path="res://entities/player/components/player_inventory_comp.tscn" id="5_rrhvl"]
-[ext_resource type="Script" path="res://items/data/item_slot.gd" id="7_dx6vc"]
 [ext_resource type="PackedScene" uid="uid://bde2700qt0aa" path="res://entities/components/thirst_component.tscn" id="13_m66di"]
-[ext_resource type="Script" path="res://items/data/inventory_data.gd" id="16_mi83r"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_q8nsc"]
 
@@ -14,12 +12,6 @@
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wrjru"]
 albedo_color = Color(1, 0.117647, 0.2, 1)
-
-[sub_resource type="Resource" id="Resource_0dw6u"]
-script = ExtResource("16_mi83r")
-columns = 6
-rows = 7
-slots = Array[ExtResource("7_dx6vc")]([])
 
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_7kss8")
@@ -41,7 +33,6 @@ health = NodePath("../HealthComponent")
 [node name="HealthComponent" parent="." instance=ExtResource("4_eocks")]
 
 [node name="PlayerInventoryComp" parent="." instance=ExtResource("5_rrhvl")]
-inventory = SubResource("Resource_0dw6u")
 
 [node name="InteractorComp" parent="." node_paths=PackedStringArray("thirst") instance=ExtResource("5_6jaul")]
 transform = Transform3D(1.79521, 0, 0, 0, 1.79521, 0, 0, 0, 1.79521, 0, 0, 0)
@@ -49,3 +40,7 @@ thirst = NodePath("../ThirstComponent")
 
 [node name="Name" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.49144, 0)
+
+[connection signal="thirst_changed" from="ThirstComponent" to="." method="_on_thirst_changed"]
+[connection signal="health_changed" from="HealthComponent" to="." method="_on_health_changed"]
+[connection signal="health_depleted" from="HealthComponent" to="." method="_on_health_depleted"]

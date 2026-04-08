@@ -21,19 +21,11 @@ var all_item_datas: Dictionary = {
 	}
 }
 var items: Dictionary = {
-	"123": ItemData.new({
-		"quantity": 10,
-		"stackable": true,
-		"max_stack": 16,
-		"formatted_name": "Medal",
-		"icon_path": "res://items/resources/medal.png",
-		"item_id": "medal",
-		"guid": "123"
-	})
 }
 func get_items_serialised() -> Dictionary:
 	var serialised_items = {}
-	for item in items:
+	for item_key in items:
+		var item = items[item_key]
 		serialised_items[item.guid] = item.to_dict()
 	return serialised_items
 func get_item(guid: String) -> ItemData:
@@ -60,5 +52,9 @@ func new_random_item() -> String:
 @rpc("authority")
 func update_item_list(new_items: Dictionary):
 	items.clear()
-	for item_dict in new_items:
+	for item_key in new_items:
+		var item_dict = new_items[item_key]
 		items[item_dict.guid] = ItemData.new(item_dict)
+@rpc("any_peer")
+func fetch_network_items():
+	update_item_list.rpc(get_items_serialised())

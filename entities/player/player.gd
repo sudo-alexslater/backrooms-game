@@ -87,16 +87,20 @@ func respawn():
 		$ThirstComponent.reset()
 		$InteractorComp.monitoring = true
 		$PlayerInventoryComp.inventory_gui_enabled = true
-		Logger.debug("Respawning local player and setting position to: " + str(spawnpoint))
+		GameLogger.debug("Respawning local player and setting position to: " + str(spawnpoint))
 	else: 
-		Logger.debug("Respawning non-local player")
+		GameLogger.debug("Respawning non-local player")
 	$Mesh.show()
 
 func spawn_corpse():
-	var player_inventory: InventoryData = $PlayerInventoryComp.inventory
-	EntityService.spawn_entity.rpc("res://entities/player/player_corpse.tscn", position, {
-		"inventory": player_inventory.to_dict(),
-		"player_state": state.to_dict()
+	var player_inventory: EntityInventory = $PlayerInventoryComp/EntityInventory
+	EntityService.add_entity.rpc_id(1, {
+		"node_path": "res://entities/player/player_corpse.tscn",
+		"initial_position": position,
+		"options": {
+			"inventory": player_inventory.to_dict(),
+			"player_state": state.to_dict()
+		}
 	})
 	player_inventory.clear_inventory()
 

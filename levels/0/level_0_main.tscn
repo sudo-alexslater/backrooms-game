@@ -57,5 +57,6 @@ surface_material_override/0 = SubResource("StandardMaterial3D_xycl5")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Map/Floor/StaticBody3D"]
 shape = SubResource("WorldBoundaryShape3D_ttrkl")
 
-[node name="PreviewCamera" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 17.3615, 115.763, 27.8847)
+[node name="Players" type="Node3D" parent="."]
+
+[node name="Entities" type="Node3D" parent="."]

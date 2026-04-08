@@ -24,6 +24,6 @@ func init(state: EntityState):
 	var options := state.options
 	if options.has("player_state"):
 		player_state = PlayerState.new(options.player_state)
-	if state.options.has("inventory"):
-		$ItemInventoryComponent.inventory = InventoryData.new(options.inventory)
+	if options.has("inventory"):
+		$ItemInventoryComponent/EntityInventory.init(options.inventory)
 	

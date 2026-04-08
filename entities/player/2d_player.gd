@@ -85,9 +85,9 @@ func respawn():
 		$ThirstComponent.reset()
 		$InteractorComponent.monitoring = true
 		$PlayerInventoryComponent.inventory_gui_enabled = true
-		Logger.debug("Respawning local player and setting position to: " + str(spawnpoint.position))
+		GameLogger.debug("Respawning local player and setting position to: " + str(spawnpoint.position))
 	else: 
-		Logger.debug("Respawning non-local player")
+		GameLogger.debug("Respawning non-local player")
 	$Sprite.show()
 	$Sprite.play("idle_front")
 

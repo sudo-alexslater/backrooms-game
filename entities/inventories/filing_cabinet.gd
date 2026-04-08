@@ -6,21 +6,21 @@ func _ready():
 	if NetworkService.is_authority():
 		for indx in randi_range(2, 10):
 			var random_item_guid = ItemService.new_random_item()
-			$ItemInventoryComponent.inventory.add_slot(ItemSlot.new({
+			$ItemInventoryComponent/EntityInventory.add_slot({
 				"row": 0, 
 				"col": 0,
 				"item_guid": random_item_guid
-			}))
-func _on_item_selected(slot: ItemSlot, interactor: Node):
+			})
+func _on_item_selected(slot: Dictionary, interactor: Node):
+	if not slot.has("item_guid"):
+		return 
 	# if the interactor has an inventory component transfer into it
-	var component: Node = get_node_or_null(str(interactor.get_path()) + "/PlayerInventoryComp")
+	var component: Node = get_node_or_null(str(interactor.get_path()) + "/PlayerInventoryComp/EntityInventory")
 	if component:
-		component.inventory.add_slot(slot)
-		$ItemInventoryComponent.inventory.remove_slot_with_id(slot.item.guid)
+		component.add_slot(slot)
+		$ItemInventoryComponent/EntityInventory.remove_slot_with_id(slot.item_guid)
 	else:
 		print("ERROR: interactor does not have a player inventory component")
 
 func init(state: EntityState):
-	var options := state.options
-	if state.options.has("inventory"):
-		$ItemInventoryComponent.inventory = InventoryData.new(options.inventory)
+	pass

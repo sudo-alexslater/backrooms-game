@@ -7,11 +7,11 @@ signal thirst_depleted
 @export
 var health: HealthComponent
 @export
-var max_thirst := 20
+var max_thirst := 5
 @export
 var thirsting_amount := 1
 @export
-var thirst_hurt_amount := 1
+var thirst_hurt_amount := 100
 @export
 var disabled := false :
 	set(input):

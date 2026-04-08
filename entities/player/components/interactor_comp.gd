@@ -9,7 +9,7 @@ func _ready():
 	
 func _physics_process(delta):
 	if Input.is_action_just_pressed("interact"):
-		interact()
+		initiate_interaction()
 
 var interactables_in_range = []
 func _interactable_entered_range(other: Area3D):
@@ -19,7 +19,7 @@ func _interactable_left_range(other: Area3D):
 	interactables_in_range.erase(other)
 
 var interacting = false
-func interact():
+func initiate_interaction():
 	if interactables_in_range.is_empty():
 		return
 	interacting = true
@@ -34,3 +34,7 @@ func interact():
 func apply_interactable_effect(interaction_data: Dictionary):
 	if interaction_data.effect == "thirst":
 		thirst.drink(interaction_data.effect_value)
+
+func interact(interactor: Node):
+	GameLogger.debug(interactor.name + " has interacted with a player")
+	return {}

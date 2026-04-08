@@ -1,10 +1,10 @@
 extends Button
 class_name UIInventorySlot
 
-signal slot_selected(slot: ItemSlot)
+signal slot_selected(slot: Dictionary)
 
 @export
-var item_slot: ItemSlot :
+var item_slot: Dictionary :
 	set(input): 
 		item_slot = input
 		refresh()
@@ -14,9 +14,17 @@ var item_slot: ItemSlot :
 func refresh():
 	if not is_node_ready():
 		await ready
-	var texture = item_slot.item.icon
-	var quantity = item_slot.item.quantity
-	var _name = item_slot.item.formatted_name
+	var item = {
+		"icon": load("res://items/resources/empty.png"),
+		"quantity": 0,
+		"formatted_name": "EMPTY"
+	}
+	if item_slot.has("item_guid"):
+		item = ItemService.get_item(item_slot.item_guid)
+		
+	var texture = item.icon
+	var quantity = item.quantity
+	var _name = item.formatted_name
 	$Icon.texture = texture
 	if quantity == 0:
 		$Quantity.text = ""

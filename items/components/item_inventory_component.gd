@@ -1,10 +1,10 @@
 extends Node3D
 class_name ItemInventoryComponent
 
-signal item_selected(slot: ItemSlot, interactor: Node)
+signal item_selected(slot: Dictionary, interactor: Node)
 
-@export var inventory: InventoryData
 @export var inventory_text := "DEFAULT TEXT"
+
 @onready var inventory_grid: InventoryGrid = $Window/Panel/MarginContainer/VBox/HBox/InventoryGrid
 @onready var title: Label = $Window/Panel/MarginContainer/VBox/Title
 var inventory_item_node := preload("res://components/ui_inventory_slot.tscn")
@@ -13,19 +13,14 @@ var interacting_entity: Node
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	close()
-	if NetworkService.is_authority():
-		refresh.rpc(inventory.to_dict())
+	refresh()
 	
 func _process(delta):
 	if Input.is_action_just_pressed("escape") && $Window.visible:
 		close()
 
-@rpc("any_peer", "call_local")
-func refresh(inventory_dict: Dictionary = {}):
-	if !inventory_dict.is_empty():
-		inventory = InventoryData.new(inventory_dict)
-		inventory.inventory_updated.connect(on_inventory_updated)
-	inventory_grid.refresh(inventory, on_slot_selected)
+func refresh():
+	inventory_grid.refresh($EntityInventory, on_slot_selected)
 	title.text = inventory_text
 
 func open():
@@ -46,8 +41,8 @@ func interact(interactor: Node):
 func get_interaction_details(): 
 	return {}
 	
-func on_slot_selected(slot: ItemSlot):
+func on_slot_selected(slot: Dictionary):
 	item_selected.emit(slot, interacting_entity)
 
-func on_inventory_updated():
-	refresh.rpc(inventory.to_dict())
+func _on_entity_inventory_updated() -> void:
+	refresh()

@@ -51,7 +51,7 @@ func deserialise_player_states(input):
 	return new_states
 
 func get_player_node_or_null(id):
-	return get_node_or_null("/root/game/" + str(id))
+	return get_node_or_null("/root/game/Players/" + str(id))
 func spawn_player(id: int, state: PlayerState):
 	if not NetworkService.is_connected_to_game:
 		await NetworkService.connected_to_game
@@ -60,13 +60,13 @@ func spawn_player(id: int, state: PlayerState):
 	if existing_player != null:
 		return
 		
-	var game_root = get_node("/root/game")
+	var game_root = get_node("/root/game/Players")
 	var instance: Player = player.instantiate()
 	instance.is_local_player = id == multiplayer.get_unique_id()
 	instance.state = state
 	instance.name = str(id);
 	game_root.add_child(instance);
-	Logger.debug("Player " + str(id) + " has spawned.")
+	GameLogger.debug("Player " + str(id) + " has spawned.")
 func despawn_player(id):
 	var to_despawn = get_player_node_or_null(id)
 	if to_despawn != null:
@@ -90,7 +90,7 @@ func update_player_states(new_states_input):
 		all_states[id]["new"] = new_states[id]
 		
 	var local_player_id := multiplayer.get_unique_id()
-	Logger.debug("Processing states: " + str(all_states))
+	GameLogger.debug("Processing states: " + str(all_states))
 	for id in all_states:
 		var states = all_states[id]
 		var old_state = states["old"]

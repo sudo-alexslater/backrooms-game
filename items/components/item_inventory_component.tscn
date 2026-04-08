@@ -1,11 +1,16 @@
-[gd_scene load_steps=4 format=3 uid="uid://bktxyhtc0hg06"]
+[gd_scene load_steps=5 format=3 uid="uid://bktxyhtc0hg06"]
 
 [ext_resource type="Script" path="res://items/components/item_inventory_component.gd" id="1_li5f1"]
+[ext_resource type="PackedScene" uid="uid://pq2yai67dyb" path="res://entities/components/entity_inventory.tscn" id="2_7j5k3"]
 [ext_resource type="PackedScene" uid="uid://b5ioc7ecjinyq" path="res://items/components/interactable_component.tscn" id="2_fmqba"]
 [ext_resource type="PackedScene" uid="uid://cjtvc6cvjittt" path="res://components/inventory_grid.tscn" id="3_2dugj"]
 
 [node name="ItemInventoryComponent" type="Node3D"]
 script = ExtResource("1_li5f1")
+
+[node name="EntityInventory" parent="." instance=ExtResource("2_7j5k3")]
+columns = 4
+rows = 4
 
 [node name="Window" type="CanvasLayer" parent="."]
 visible = false
@@ -46,3 +51,5 @@ size_flags_vertical = 4
 layout_mode = 2
 
 [node name="InteractableComponent" parent="." instance=ExtResource("2_fmqba")]
+
+[connection signal="updated" from="EntityInventory" to="." method="_on_entity_inventory_updated"]

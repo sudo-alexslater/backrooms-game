@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://pq2yai67dyb"]
+
+[ext_resource type="Script" path="res://entities/components/entity_inventory.gd" id="1_p8qtm"]
+
+[node name="EntityInventory" type="Node"]
+script = ExtResource("1_p8qtm")
+columns = 5
+rows = 5
