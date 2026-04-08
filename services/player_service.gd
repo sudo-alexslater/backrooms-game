@@ -93,7 +93,6 @@ func update_player_states(new_states_input):
 	GameLogger.debug("Processing states: " + str(all_states))
 	for id in all_states:
 		var states = all_states[id]
-		var old_state = states["old"]
 		var new_state = states["new"]
 		var player_is_spawned = get_player_node_or_null(id) != null
 		

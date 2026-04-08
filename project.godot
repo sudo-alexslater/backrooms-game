@@ -29,6 +29,8 @@ GameLogger="*res://services/logger.gd"
 PlayerGui="*res://entities/player/components/player_gui.tscn"
 IDService="*res://services/id_service.gd"
 ItemService="*res://services/item_service.gd"
+InventoryTransferService="*res://services/inventory_transfer_service.gd"
+InventoryDebugPanel="*res://ui/debug/inventory_debug_panel.tscn"
 
 [display]
 

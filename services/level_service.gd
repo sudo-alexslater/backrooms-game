@@ -2,6 +2,7 @@ extends Node
 
 var player: CharacterBody3D
 var wall := preload("res://levels/0/environment/level_0_cell.tscn")
+const IDServiceScript = preload("res://services/id_service.gd")
 
 # Called once per tick
 func _process(_delta):
@@ -44,7 +45,7 @@ func get_blank_region() -> Dictionary:
 	return out
 func spawn_loot(at: Vector3):
 	EntityService.add_entity({
-		"guid": IDService.v4(),
+		"guid": IDServiceScript.v4(),
 		"initial_position": at,
 		"node_path": "res://entities/inventories/filing_cabinet.tscn"
 	})
@@ -54,10 +55,12 @@ func spawn_loot(at: Vector3):
 func render_chunks():
 	var player_pos: Vector3 = floor(player.global_position / tile_size)
 	var player_chunk_pos: Vector3 = floor(player_pos / chunk_size) * chunk_size
+	var chunk_x := int(player_chunk_pos.x)
+	var chunk_y := int(player_chunk_pos.z)
 	
-	var chunk_id = get_cell_id(player_chunk_pos.x, player_chunk_pos.z)
+	var chunk_id = get_cell_id(chunk_x, chunk_y)
 	if !is_loaded.has(chunk_id) and !is_loading.has(chunk_id):
-		request_chunk.rpc_id(1, player_chunk_pos.x, player_chunk_pos.z)
+		request_chunk.rpc_id(1, chunk_x, chunk_y)
 		is_loading[chunk_id] = true
 
 # load chunk on server
@@ -81,33 +84,33 @@ func request_chunk(x: int, y: int):
 
 # receive load chunk instruction from server
 @rpc("authority", "call_local")
-func load_chunk(x: int, y: int, chunk_data: Array):
+func load_chunk(x: int, y: int, new_chunk_data: Array):
 	var chunk_id = get_cell_id(x, y)
 	# todo: add chunk as node3d to organize walls
 	
-	for cell in chunk_data:
+	for cell in new_chunk_data:
 		# one cell is 2x2
 		var pos_x = x*tile_size + tile_size*cell.x
 		var pos_y = y*tile_size + tile_size*cell.y
 		if cell.north_wall:
 			var wall_node: Level0Cell = wall.instantiate()
 			wall_node.position = Vector3(pos_x, 0, pos_y)
-			wall_node.wall_type = 0
+			wall_node.wall_type = Level0Cell.WallType.north
 			get_node("/root/game/Map").add_child(wall_node)
 		if cell.south_wall:
 			var wall_node: Level0Cell = wall.instantiate()
 			wall_node.position = Vector3(pos_x, 0, pos_y)
-			wall_node.wall_type = 1
+			wall_node.wall_type = Level0Cell.WallType.south
 			get_node("/root/game/Map").add_child(wall_node)
 		if cell.east_wall:
 			var wall_node: Level0Cell = wall.instantiate()
 			wall_node.position = Vector3(pos_x, 0, pos_y)
-			wall_node.wall_type = 2
+			wall_node.wall_type = Level0Cell.WallType.east
 			get_node("/root/game/Map").add_child(wall_node)
 		if cell.west_wall:
 			var wall_node: Level0Cell = wall.instantiate()
 			wall_node.position = Vector3(pos_x, 0, pos_y)
-			wall_node.wall_type = 3
+			wall_node.wall_type = Level0Cell.WallType.west
 			get_node("/root/game/Map").add_child(wall_node)
 			# todo: how am i going to make the server do this but not spawn it everywhere
 		if cell.is_loot_tile and NetworkService.is_authority():
@@ -115,12 +118,12 @@ func load_chunk(x: int, y: int, chunk_data: Array):
 	# set loading flags
 	is_loaded[chunk_id] = true
 	is_loading[chunk_id] = false
-func unload_chunk(x: int, y: int):
+func unload_chunk(_x: int, _y: int):
 	pass
 
 # --- maze generation techniques ---
 # recursive division function mutating a map
-func blobby_divide_region(chunk_data: Array, in_region: Dictionary = get_blank_region(), x =0, y=0):
+func blobby_divide_region(current_chunk_data: Array, in_region: Dictionary = get_blank_region(), x =0, y=0):
 	# exit if room size met
 	if in_region.values().size() <= room_size:
 		return
@@ -195,8 +198,8 @@ func blobby_divide_region(chunk_data: Array, in_region: Dictionary = get_blank_r
 			new_walls.erase(selected_wall)
 	
 	# mutate chunk data with new walls
-	chunk_data.append_array(new_walls)
+	current_chunk_data.append_array(new_walls)
 
 	# divide further
-	await blobby_divide_region(chunk_data, region_a, x, y)
-	await blobby_divide_region(chunk_data, region_b, x, y)
+	await blobby_divide_region(current_chunk_data, region_a, x, y)
+	await blobby_divide_region(current_chunk_data, region_b, x, y)

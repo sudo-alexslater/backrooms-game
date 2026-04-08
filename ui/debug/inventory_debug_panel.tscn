@@ -1,0 +1,39 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://ui/debug/inventory_debug_panel.gd" id="1_1"]
+
+[node name="InventoryDebugPanel" type="CanvasLayer"]
+script = ExtResource("1_1")
+
+[node name="Panel" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 1
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin"]
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Panel/Margin/VBox"]
+text = "Inventory Debug (F8)"
+
+[node name="DumpState" type="Button" parent="Panel/Margin/VBox"]
+text = "Dump State"
+
+[node name="SeedWorld" type="Button" parent="Panel/Margin/VBox"]
+text = "Seed World Inventory (Random Item)"
+
+[node name="TransferWorldToLocal" type="Button" parent="Panel/Margin/VBox"]
+text = "Transfer First World Item -> Local"
+
+[node name="Status" type="Label" parent="Panel/Margin/VBox"]
+autowrap_mode = 3
+text = "Status"
+
+[connection signal="pressed" from="Panel/Margin/VBox/DumpState" to="." method="_on_dump_state_pressed"]
+[connection signal="pressed" from="Panel/Margin/VBox/SeedWorld" to="." method="_on_seed_world_pressed"]
+[connection signal="pressed" from="Panel/Margin/VBox/TransferWorldToLocal" to="." method="_on_transfer_world_to_local_pressed"]

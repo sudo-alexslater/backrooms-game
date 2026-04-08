@@ -9,14 +9,7 @@ var player_state: PlayerState :
 		return player_state
 
 func _on_item_selected(slot: Dictionary, interactor: Node):
-	if not slot.has("item_guid"):
-		return
-	var component: Node = get_node_or_null(str(interactor.get_path()) + "/PlayerInventoryComp/EntityInventory")
-	if component:
-		component.add_slot(slot)
-		$ItemInventoryComponent/EntityInventory.remove_slot_with_id(slot.item_guid)
-	else:
-		print("ERROR: interactor does not have a player inventory component")
+	$ItemInventoryComponent.request_transfer_to_interactor(slot, interactor)
 
 # ==================
 # Entity System

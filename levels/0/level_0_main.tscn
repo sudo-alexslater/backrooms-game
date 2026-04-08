@@ -1,6 +1,6 @@
-[gd_scene load_steps=9 format=3 uid="uid://cfuo2wpjen7wk"]
+[gd_scene format=3 uid="uid://cfuo2wpjen7wk"]
 
-[ext_resource type="Script" path="res://levels/0/level_0_main.gd" id="1_7uhvg"]
+[ext_resource type="Script" uid="uid://cjwl8ou5hgqma" path="res://levels/0/level_0_main.gd" id="1_7uhvg"]
 [ext_resource type="Texture2D" uid="uid://d1fva5jyvtlon" path="res://resources/textures/environment/ceiling.jpg" id="3_iiie4"]
 [ext_resource type="Texture2D" uid="uid://clvsexkcuceer" path="res://resources/textures/environment/carpet.jpg" id="4_5n7qy"]
 
@@ -29,34 +29,34 @@ albedo_texture = ExtResource("4_5n7qy")
 uv1_triplanar = true
 uv1_world_triplanar = true
 
-[node name="game" type="WorldEnvironment"]
+[node name="game" type="WorldEnvironment" unique_id=1879907100]
 environment = SubResource("Environment_bvafs")
 script = ExtResource("1_7uhvg")
 
-[node name="Map" type="Node3D" parent="."]
+[node name="Map" type="Node3D" parent="." unique_id=2020783888]
 
-[node name="Ceiling" type="MeshInstance3D" parent="Map"]
+[node name="Ceiling" type="MeshInstance3D" parent="Map" unique_id=491614807]
 transform = Transform3D(221.705, 0, 0, 0, -1, 1.84344e-05, 0, -8.74228e-08, -210.865, 0, 4, 0)
 mesh = SubResource("PlaneMesh_w552e")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_6uajd")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Map/Ceiling"]
+[node name="StaticBody3D" type="StaticBody3D" parent="Map/Ceiling" unique_id=822760661]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Map/Ceiling/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Map/Ceiling/StaticBody3D" unique_id=1908129669]
 shape = SubResource("WorldBoundaryShape3D_ttrkl")
 
-[node name="Floor" type="MeshInstance3D" parent="Map"]
+[node name="Floor" type="MeshInstance3D" parent="Map" unique_id=41536470]
 transform = Transform3D(221.705, 0, 0, 0, 1, 0, 0, 0, 210.865, 0.0145841, -0.00770259, -0.127506)
 mesh = SubResource("PlaneMesh_w552e")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_xycl5")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Map/Floor"]
+[node name="StaticBody3D" type="StaticBody3D" parent="Map/Floor" unique_id=1325098071]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Map/Floor/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Map/Floor/StaticBody3D" unique_id=115237120]
 shape = SubResource("WorldBoundaryShape3D_ttrkl")
 
-[node name="Players" type="Node3D" parent="."]
+[node name="Players" type="Node3D" parent="." unique_id=1145550858]
 
-[node name="Entities" type="Node3D" parent="."]
+[node name="Entities" type="Node3D" parent="." unique_id=940266919]

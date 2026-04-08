@@ -14,7 +14,7 @@ func _ready():
 	close()
 	refresh()
 
-func _input(event):
+func _input(_event):
 	if Input.is_action_just_pressed("toggle_inventory") and inventory_gui_enabled:
 		refresh()
 		if $Window.visible:
@@ -38,8 +38,13 @@ func close():
 	PlayerGui.dialog_has_closed("player_inventory")
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
+func get_inventory() -> EntityInventory:
+	return $EntityInventory
+
 func on_slot_selected(item: Dictionary):
-	GameLogger.debug("Item selected: " + item.item_guid)
+	if not item.has("item_guid"):
+		return
+	GameLogger.debug("Item selected: " + str(item.item_guid))
 
 func _on_entity_inventory_updated() -> void:
 	refresh()

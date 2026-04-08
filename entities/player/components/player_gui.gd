@@ -40,10 +40,10 @@ func switch_scene(scene: GUIScene):
 		show_death()
 
 var open_dialogs: Dictionary = {}
-func dialog_has_opened(name: String):
-	open_dialogs[name] = true
-func dialog_has_closed(name: String):
-	open_dialogs[name] = false
+func dialog_has_opened(dialog_name: String):
+	open_dialogs[dialog_name] = true
+func dialog_has_closed(dialog_name: String):
+	open_dialogs[dialog_name] = false
 func has_open_dialog():
 	for dialog_name in open_dialogs:
 		if open_dialogs[dialog_name]:

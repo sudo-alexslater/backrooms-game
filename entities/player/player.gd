@@ -73,6 +73,9 @@ func to_dict():
 		"is_local_player": is_local_player,
 		"state": state.to_dict()
 	}
+
+func get_inventory() -> EntityInventory:
+	return $PlayerInventoryComp/EntityInventory
 		
 # ==================
 # Death and respawn

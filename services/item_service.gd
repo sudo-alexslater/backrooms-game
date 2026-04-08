@@ -1,4 +1,5 @@
 extends Node
+const IDServiceScript = preload("res://services/id_service.gd")
 
 var all_item_datas: Dictionary = {
 	"bones": {
@@ -35,19 +36,27 @@ func get_item(guid: String) -> ItemData:
 		return null
 @rpc("any_peer")
 func put_item(guid: String, item: ItemData):
+	if not NetworkService.is_authority():
+		return
 	items[guid] = item
 	update_item_list.rpc(get_items_serialised())
 @rpc("any_peer")
 func remove_item(guid: String):
+	if not NetworkService.is_authority():
+		return
 	items.erase(guid)
 	update_item_list.rpc(get_items_serialised())
 @rpc("any_peer")
 func new_random_item() -> String:
-	var random_item = all_item_datas.values().pick_random()
-	var random_quantity = randi_range(1, random_item.max_stack)
+	if not NetworkService.is_authority():
+		return ""
+	var random_item_template = all_item_datas.values().pick_random()
+	var random_item = random_item_template.duplicate(true)
+	var random_quantity = randi_range(1, int(random_item.max_stack))
 	random_item.quantity = random_quantity
-	random_item.guid = IDService.v4()
+	random_item.guid = IDServiceScript.v4()
 	items[random_item.guid] = ItemData.new(random_item)
+	update_item_list.rpc(get_items_serialised())
 	return random_item.guid
 @rpc("authority")
 func update_item_list(new_items: Dictionary):
@@ -57,4 +66,6 @@ func update_item_list(new_items: Dictionary):
 		items[item_dict.guid] = ItemData.new(item_dict)
 @rpc("any_peer")
 func fetch_network_items():
+	if not NetworkService.is_authority():
+		return
 	update_item_list.rpc(get_items_serialised())

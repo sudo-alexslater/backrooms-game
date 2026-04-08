@@ -22,7 +22,6 @@ func spawn_entity(state: EntityState):
 	get_node("/root/game/Entities/").add_child(new_node)
 @rpc("call_local", "authority")
 func update_entity_list(new_entities: Array[Dictionary]):
-	var old_entities = entities
 	var refreshed_entities = {}
 	for new_entity_dict in new_entities:
 		var new_entity = EntityState.new(new_entity_dict)

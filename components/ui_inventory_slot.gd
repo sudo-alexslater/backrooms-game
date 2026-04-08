@@ -14,17 +14,19 @@ var item_slot: Dictionary :
 func refresh():
 	if not is_node_ready():
 		await ready
-	var item = {
+	var empty_item = {
 		"icon": load("res://items/resources/empty.png"),
 		"quantity": 0,
 		"formatted_name": "EMPTY"
 	}
+	var item = empty_item
 	if item_slot.has("item_guid"):
-		item = ItemService.get_item(item_slot.item_guid)
+		var resolved_item = ItemService.get_item(str(item_slot.item_guid))
+		if resolved_item != null:
+			item = resolved_item
 		
 	var texture = item.icon
 	var quantity = item.quantity
-	var _name = item.formatted_name
 	$Icon.texture = texture
 	if quantity == 0:
 		$Quantity.text = ""

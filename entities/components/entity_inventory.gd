@@ -2,6 +2,7 @@ extends Node
 class_name EntityInventory
 
 signal updated
+const InventoryOpsScript = preload("res://services/inventory_ops.gd")
 
 @export
 var columns: int :
@@ -27,9 +28,9 @@ func _ready():
 	if not NetworkService.is_authority():
 		fetch_from_network.rpc_id(1)
 
-@rpc("any_peer", "call_local")
+@rpc("authority", "call_local")
 func update_network(new_slots: Array[Dictionary]):
-	slots = new_slots
+	slots = InventoryOpsScript.sanitize_slots(new_slots)
 	updated.emit()
 @rpc("any_peer", "call_remote")
 func fetch_from_network():
@@ -37,74 +38,55 @@ func fetch_from_network():
 		return
 	update_network.rpc(slots)
 func update_slots(new_slots: Array[Dictionary]): 
-	update_network.rpc(new_slots)
-	updated.emit()
+	var normalized_slots = InventoryOpsScript.sanitize_slots(new_slots)
+	if not NetworkService.is_authority():
+		return
+	# init()/setters can run before this node is inside the tree.
+	# In that phase, rpc() is invalid; keep local state and sync later through normal entity updates.
+	if not is_inside_tree():
+		slots = normalized_slots
+		return
+	update_network.rpc(normalized_slots)
+
 func resize_inventory():
-	var all_slots = slots.duplicate(true)
-	# reinsert items, tracking items that don't fit since resize
-	var items_needing_new_slots: Array[Dictionary] = []
-	for slot in all_slots:
-		var row_num = slot.row
-		var col_num = slot.col 
-		var row_doesnt_fit = slot.row > rows - 1
-		var col_doesnt_fit = slot.col > columns - 1
-		var existing_item_in_slot = get_item(row_num, col_num)
-		if row_doesnt_fit or col_doesnt_fit or (existing_item_in_slot != null and existing_item_in_slot.item_guid != slot.item_guid):
-			items_needing_new_slots.push_back(slot)
-			continue
-	# reassign slots that didn't fit due to resize
-	for slot_to_reassign in items_needing_new_slots:
-		var slot_found = false
-		for row_num in range(rows):
-			for col_num in range(columns):
-				if get_item(row_num, col_num) == null:
-					slot_found = true
-					slot_to_reassign.row = row_num
-					slot_to_reassign.col = col_num
-					break
-			if slot_found:
-				break
-		if not slot_found:
-			print("[!] Orphaned item from inventory resize: ", slot_to_reassign.item.guid)
-	update_slots(all_slots)
+	if not NetworkService.is_authority():
+		return
+	update_slots(InventoryOpsScript.resize_slots(slots, rows, columns))
+
 func add_slot(slot: Dictionary) -> void:
-	var all_slots = slots.duplicate(true)
-	# find first free slot
-	for row_index in range(rows):
-		for column_index in range(columns):
-			if get_item(row_index, column_index).is_empty():
-				# set slot col and row and exit
-				slot.col = column_index
-				slot.row = row_index
-				all_slots.push_back(slot)
-				update_slots(all_slots)
-				return
+	if not NetworkService.is_authority():
+		return
+	update_slots(InventoryOpsScript.add_slot(slots, slot, rows, columns))
+
 func remove_slot_with_id(guid: String) -> void:
-	var all_slots = slots.duplicate(true)
-	# find and remove from master slot list
-	for slot in all_slots:
-		if slot.item_guid == guid:
-			all_slots.erase(slot)
-			break
-	update_slots(all_slots)
+	if not NetworkService.is_authority():
+		return
+	update_slots(InventoryOpsScript.remove_slot_with_id(slots, guid))
+
 func clear_inventory() -> void:
+	if not NetworkService.is_authority():
+		return
 	update_slots([])
-func get_item(row: int, col: int) -> Dictionary:
+
+func has_free_slot() -> bool:
+	return not InventoryOpsScript.find_free_slot(slots, rows, columns).is_empty()
+
+func get_slot_by_guid(guid: String) -> Dictionary:
 	for slot in slots:
-		if slot.row == row and slot.col == col:
+		if str(slot.get("item_guid", "")) == guid:
 			return slot
 	return {}
 
+func get_item(row: int, col: int) -> Dictionary:
+	return InventoryOpsScript.get_item(slots, row, col)
+
 func init(input_dict: Dictionary = {}):
-	if input_dict.has("columns"):
-		columns = input_dict["columns"]
-	if input_dict.has("rows"):
-		rows = input_dict["rows"]
-	if input_dict.has("slots"):
-		slots = input_dict["slots"]
+	if input_dict.has("columns"): columns = int(input_dict["columns"])
+	if input_dict.has("rows"): rows = int(input_dict["rows"])
+	if input_dict.has("slots"): slots = InventoryOpsScript.sanitize_slots(input_dict["slots"])
 func to_dict():
 	return {
 		"columns": columns,
 		"rows": rows,
-		"slots": slots
+		"slots": InventoryOpsScript.sanitize_slots(slots)
 	}
