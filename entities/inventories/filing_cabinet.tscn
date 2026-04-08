@@ -14,4 +14,3 @@ transform = Transform3D(0.363239, 0, 0, 0, 0.363239, 0, 0, 0, 0.363239, 0, 0.359
 transform = Transform3D(2.90283, 0, 0, 0, 2.90283, 0, 0, 0, 2.90283, 0, 0.688842, 0)
 inventory_text = "Filing Cabinet"
 
-[connection signal="item_selected" from="ItemInventoryComponent" to="." method="_on_item_selected"]

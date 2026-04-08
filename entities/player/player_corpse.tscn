@@ -14,4 +14,3 @@ texture = ExtResource("1_hx3ob")
 [node name="ItemInventoryComponent" parent="." instance=ExtResource("3_mhwoq")]
 inventory_text = "PLAYER CORPSE"
 
-[connection signal="item_selected" from="ItemInventoryComponent" to="." method="_on_item_selected"]

@@ -3,25 +3,27 @@ extends CanvasLayer
 @onready var panel: PanelContainer = $Panel
 @onready var status_label: Label = $Panel/Margin/VBox/Status
 
-func _ready():
+
+func _ready() -> void:
 	panel.visible = false
 	_layout_panel_top_right()
 	_set_status("Inventory debug ready (F8)")
 
 
 func _layout_panel_top_right() -> void:
-	# Anchor to viewport top-right; 12px margin from top and right edges.
 	panel.set_anchors_preset(Control.PRESET_TOP_RIGHT)
 	panel.offset_top = 12.0
 	panel.offset_right = -12.0
 	panel.offset_left = -392.0
 	panel.offset_bottom = 220.0
 
-func _unhandled_input(event):
+
+func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F8:
 		panel.visible = not panel.visible
 
-func _on_dump_state_pressed():
+
+func _on_dump_state_pressed() -> void:
 	var local_inventory = _get_local_player_inventory()
 	var world_inventory = _get_first_world_inventory()
 	var local_slots = 0 if local_inventory == null else local_inventory.slots.size()
@@ -31,7 +33,8 @@ func _on_dump_state_pressed():
 	GameLogger.debug("[InvDebug] local slots: " + str([] if local_inventory == null else local_inventory.slots))
 	GameLogger.debug("[InvDebug] world slots: " + str([] if world_inventory == null else world_inventory.slots))
 
-func _on_seed_world_pressed():
+
+func _on_seed_world_pressed() -> void:
 	var world_inventory = _get_first_world_inventory()
 	if world_inventory == null:
 		_set_status("No world inventory found under /root/game/Entities")
@@ -39,7 +42,8 @@ func _on_seed_world_pressed():
 	InventoryTransferService.request_seed_random_item_local(world_inventory.get_path())
 	_set_status("Requested seed random item into world inventory")
 
-func _on_transfer_world_to_local_pressed():
+
+func _on_transfer_world_to_local_pressed() -> void:
 	var world_inventory = _get_first_world_inventory()
 	var local_inventory = _get_local_player_inventory()
 	if world_inventory == null:
@@ -55,8 +59,16 @@ func _on_transfer_world_to_local_pressed():
 	if not slot.has("item_guid"):
 		_set_status("First world slot has no item_guid")
 		return
-	InventoryTransferService.request_transfer_local(world_inventory.get_path(), local_inventory.get_path(), str(slot.item_guid))
-	_set_status("Requested transfer for item " + str(slot.item_guid))
+	InventoryTransferService.request_slot_operation_local({
+		"type": "quick_stack",
+		"from_path": world_inventory.get_path(),
+		"fr": int(slot.row),
+		"fc": int(slot.col),
+		"guid": str(slot.item_guid),
+		"to_path": local_inventory.get_path()
+	})
+	_set_status("Requested quick stack for item " + str(slot.item_guid))
+
 
 func _get_local_player_inventory() -> EntityInventory:
 	var local_player_id = multiplayer.get_unique_id()
@@ -69,6 +81,7 @@ func _get_local_player_inventory() -> EntityInventory:
 			return inventory
 	return null
 
+
 func _get_first_world_inventory() -> EntityInventory:
 	var entities = get_node_or_null("/root/game/Entities")
 	if entities == null:
@@ -80,6 +93,6 @@ func _get_first_world_inventory() -> EntityInventory:
 				return inventory
 	return null
 
-func _set_status(message: String):
-	status_label.text = message
 
+func _set_status(message: String) -> void:
+	status_label.text = message

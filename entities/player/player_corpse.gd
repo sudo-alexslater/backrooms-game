@@ -8,13 +8,8 @@ var player_state: PlayerState :
 	get:
 		return player_state
 
-func _on_item_selected(slot: Dictionary, interactor: Node):
-	$ItemInventoryComponent.request_transfer_to_interactor(slot, interactor)
 
-# ==================
-# Entity System
-# ==================
-func init(state: EntityState):
+func init(state: EntityState) -> void:
 	var options := state.options
 	if options.has("player_state"):
 		player_state = PlayerState.new(options.player_state)

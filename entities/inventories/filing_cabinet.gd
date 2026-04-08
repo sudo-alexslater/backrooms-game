@@ -1,18 +1,16 @@
 extends Node3D
 
 
-func _ready():
-	# generate up to 10 random items, but at least 2
+func _ready() -> void:
 	if NetworkService.is_authority():
-		for indx in randi_range(2, 10):
-			var random_item_guid = ItemService.new_random_item()
-			$ItemInventoryComponent/EntityInventory.add_slot({
-				"row": 0, 
-				"col": 0,
-				"item_guid": random_item_guid
-			})
-func _on_item_selected(slot: Dictionary, interactor: Node):
-	$ItemInventoryComponent.request_transfer_to_interactor(slot, interactor)
+		for _i in randi_range(2, 10):
+			var random_item_guid := ItemService.new_random_item()
+			$ItemInventoryComponent.get_inventory().authority_place_item_first_free(random_item_guid)
 
-func init(_state: EntityState):
+
+func get_inventory() -> EntityInventory:
+	return $ItemInventoryComponent.get_inventory()
+
+
+func init(_state: EntityState) -> void:
 	pass
