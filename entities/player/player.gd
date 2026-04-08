@@ -47,16 +47,16 @@ func _physics_process(delta):
 		
 func reset_local_nodes():
 	if !get_node_or_null("ThirstComponent"):
-		var thirst_component = thirst_component_node.instance()
+		var thirst_component = thirst_component_node.instantiate()
 		add_child(thirst_component)
 		$ThirstComponent.thirst_changed.connect(PlayerGui.on_thirst_changed)
 	if !get_node_or_null("HealthComponent"):
-		var health_component = health_component_node.instance()
+		var health_component = health_component_node.instantiate()
 		add_child(health_component)
 		$HealthComponent.health_changed.connect(PlayerGui.on_health_changed)
 		$HealthComponent.health_depleted.connect(PlayerGui.on_health_depleted)
 	if !get_node_or_null("InteractorComp"):
-		var interactor_component = interactor_component_node.instance()
+		var interactor_component = interactor_component_node.instantiate()
 		add_child(interactor_component)
 
 # ==================
@@ -80,7 +80,7 @@ func to_dict():
 @rpc("any_peer", "call_local")
 func respawn():
 	if is_local_player: 
-		var spawnpoint := await EntityService.get_random_spawnpoint()		
+		var spawnpoint := EntityService.get_random_spawnpoint()		
 		position = spawnpoint
 		PlayerGui.reset()
 		$HealthComponent.reset()

@@ -7,16 +7,16 @@ signal thirst_depleted
 @export
 var health: HealthComponent
 @export
-var max_thirst := 5
+var max_thirst := 80
 @export
 var thirsting_amount := 1
 @export
-var thirst_hurt_amount := 100
+var thirst_hurt_amount := 2
 @export
 var disabled := false :
 	set(input):
 		disabled = input
-		$Timer.process_mode 
+		$Timer.paused = input
 var thirst := max_thirst
 
 

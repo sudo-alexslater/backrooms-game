@@ -1,12 +1,11 @@
 extends Node
 
 var player: CharacterBody3D
-var maze: Node2D
 var wall := preload("res://levels/0/environment/level_0_cell.tscn")
 
 # Called once per tick
 func _process(_delta):
-	# locate player and maze
+	# locate local player
 	if !player:
 		var current_player: CharacterBody3D = get_node_or_null("/root/game/" + str(multiplayer.get_unique_id()))
 		if current_player:
