@@ -8,7 +8,9 @@ const IDServiceScript = preload("res://services/id_service.gd")
 func _process(_delta):
 	# locate local player
 	if !player:
-		var current_player: CharacterBody3D = get_node_or_null("/root/game/" + str(multiplayer.get_unique_id()))
+		var current_player: CharacterBody3D = PlayerService.get_player_node_or_null(
+			multiplayer.get_unique_id()
+		) as CharacterBody3D
 		if current_player:
 			player = current_player
 	
@@ -22,14 +24,16 @@ func _process(_delta):
 var chunk_size := 25
 var room_size := 20
 var tile_size := 4
-var view_distance := 1
+## How many chunks to load in each axis from the chunk the player is in (Manhattan square: (2n+1)² chunks).
+@export_range(0, 32, 1)
+var view_distance: int = 1
 var num_of_wall_breaks := 2
 var chunk_data := {}
 var is_loaded := {}
 var is_loading := {}
 
 # --- util ---
-func get_cell_id(x: int, y: int):
+func get_cell_id(x: int, y: int) -> String:
 	return str(x) + "/" + str(y)
 func get_blank_region() -> Dictionary:
 	var out := {}
@@ -55,13 +59,18 @@ func spawn_loot(at: Vector3):
 func render_chunks():
 	var player_pos: Vector3 = floor(player.global_position / tile_size)
 	var player_chunk_pos: Vector3 = floor(player_pos / chunk_size) * chunk_size
-	var chunk_x := int(player_chunk_pos.x)
-	var chunk_y := int(player_chunk_pos.z)
-	
-	var chunk_id = get_cell_id(chunk_x, chunk_y)
-	if !is_loaded.has(chunk_id) and !is_loading.has(chunk_id):
-		request_chunk.rpc_id(1, chunk_x, chunk_y)
-		is_loading[chunk_id] = true
+	var origin_x := int(player_chunk_pos.x)
+	var origin_y := int(player_chunk_pos.z)
+
+	for ix in range(-view_distance, view_distance + 1):
+		for iy in range(-view_distance, view_distance + 1):
+			var chunk_x := origin_x + ix * chunk_size
+			var chunk_y := origin_y + iy * chunk_size
+			var chunk_id := get_cell_id(chunk_x, chunk_y)
+			if !is_loaded.has(chunk_id) and !is_loading.has(chunk_id):
+				GameLogger.debug("Requesting chunk: " + chunk_id)
+				request_chunk.rpc_id(1, chunk_x, chunk_y)
+				is_loading[chunk_id] = true
 
 # load chunk on server
 @rpc("any_peer", "call_local")
@@ -71,16 +80,14 @@ func request_chunk(x: int, y: int):
 	if chunk_data.has(get_cell_id(x, y)):
 		load_chunk.rpc(x, y, chunk_data[get_cell_id(x, y)])
 		return
-	else: 
-		# get new chunk data
-		var new_chunk = [] 
+	else:
+		# Sender id is invalid after await; capture before async maze work.
+		var requester_id := multiplayer.get_remote_sender_id()
+		var new_chunk: Array = []
 		await blobby_divide_region(new_chunk, get_blank_region(), x, y)
-		# establish one loot tile
 		new_chunk.pick_random().is_loot_tile = true
-		# store chunk data
 		chunk_data[get_cell_id(x, y)] = new_chunk
-		# communicate chunk to network
-		load_chunk.rpc_id(multiplayer.get_remote_sender_id(), x, y, new_chunk)
+		load_chunk.rpc_id(requester_id, x, y, new_chunk)
 
 # receive load chunk instruction from server
 @rpc("authority", "call_local")

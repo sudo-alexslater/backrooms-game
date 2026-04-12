@@ -25,6 +25,7 @@ uv1_world_triplanar = true
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_ttrkl"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xycl5"]
+albedo_color = Color(0.42068434, 0.42068434, 0.42068434, 1)
 albedo_texture = ExtResource("4_5n7qy")
 uv1_triplanar = true
 uv1_world_triplanar = true
