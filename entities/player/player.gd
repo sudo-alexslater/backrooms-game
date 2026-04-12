@@ -33,9 +33,30 @@ var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 		$Name.text = state.name
 
 func _ready():
-	respawn.rpc()
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	
+	# Initial spawn must stay on this machine only; calling respawn.rpc() from _ready was resetting
+	# existing clients when a new player joined (network respawn ran on every peer).
+	if is_local_player:
+		_apply_local_spawn_at_random_point("Initial spawn local player at: ")
+	$Mesh.show()
+	if is_local_player:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+func _sync_position_if_multiplayer() -> void:
+	var peer := multiplayer.multiplayer_peer
+	if peer != null and peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED:
+		update_position.rpc(position)
+
+func _apply_local_spawn_at_random_point(log_prefix: String) -> void:
+	var spawnpoint := EntityService.get_random_spawnpoint()
+	position = spawnpoint
+	PlayerGui.reset()
+	$HealthComponent.reset()
+	$ThirstComponent.reset()
+	$InteractorComp.monitoring = true
+	$PlayerInventoryComp.inventory_gui_enabled = true
+	GameLogger.debug(log_prefix + str(spawnpoint))
+	_sync_position_if_multiplayer()
+
 func _physics_process(delta):
 	if is_local_player:
 		if $HealthComponent.is_dead():
@@ -49,12 +70,12 @@ func reset_local_nodes():
 	if !get_node_or_null("ThirstComponent"):
 		var thirst_component = thirst_component_node.instantiate()
 		add_child(thirst_component)
-		$ThirstComponent.thirst_changed.connect(PlayerGui.on_thirst_changed)
+		$ThirstComponent.thirst_changed.connect(_on_thirst_changed)
 	if !get_node_or_null("HealthComponent"):
 		var health_component = health_component_node.instantiate()
 		add_child(health_component)
-		$HealthComponent.health_changed.connect(PlayerGui.on_health_changed)
-		$HealthComponent.health_depleted.connect(PlayerGui.on_health_depleted)
+		$HealthComponent.health_changed.connect(_on_health_changed)
+		$HealthComponent.health_depleted.connect(_on_health_depleted)
 	if !get_node_or_null("InteractorComp"):
 		var interactor_component = interactor_component_node.instantiate()
 		add_child(interactor_component)
@@ -82,16 +103,9 @@ func get_inventory() -> EntityInventory:
 # ==================
 @rpc("any_peer", "call_local")
 func respawn():
-	if is_local_player: 
-		var spawnpoint := EntityService.get_random_spawnpoint()		
-		position = spawnpoint
-		PlayerGui.reset()
-		$HealthComponent.reset()
-		$ThirstComponent.reset()
-		$InteractorComp.monitoring = true
-		$PlayerInventoryComp.inventory_gui_enabled = true
-		GameLogger.debug("Respawning local player and setting position to: " + str(spawnpoint))
-	else: 
+	if is_local_player:
+		_apply_local_spawn_at_random_point("Respawning local player and setting position to: ")
+	else:
 		GameLogger.debug("Respawning non-local player")
 	$Mesh.show()
 
@@ -148,13 +162,18 @@ func _input(event):
 # Handlers
 # ==================
 func _on_health_changed(old_value, new_value):
+	if not is_local_player:
+		return
 	PlayerGui.on_health_changed(old_value, new_value)
 
 func _on_thirst_changed(old_value, new_value):
+	if not is_local_player:
+		return
 	PlayerGui.on_thirst_changed(old_value, new_value)
 
 func _on_health_depleted():
 	if is_local_player:
+		PlayerGui.on_health_depleted()
 		$InteractorComp.monitoring = false
 		$PlayerInventoryComp.inventory_gui_enabled = false
 		spawn_corpse()
