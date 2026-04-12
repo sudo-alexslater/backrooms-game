@@ -2,6 +2,7 @@ extends Node
 
 var player: CharacterBody3D
 var wall := preload("res://levels/0/environment/level_0_cell.tscn")
+const Level0ChunkSurfaces = preload("res://levels/0/environment/level_0_chunk_surfaces.gd")
 const IDServiceScript = preload("res://services/id_service.gd")
 
 # Called once per tick
@@ -27,10 +28,14 @@ var tile_size := 4
 ## How many chunks to load in each axis from the chunk the player is in (Manhattan square: (2n+1)² chunks).
 @export_range(0, 32, 1)
 var view_distance: int = 1
+## Half-width/depth of the starter carpet under each spawn (world units, XZ) until chunks load.
+@export_range(2.0, 48.0, 1.0)
+var spawn_pad_half_extent: float = 8.0
 var num_of_wall_breaks := 2
 var chunk_data := {}
 var is_loaded := {}
 var is_loading := {}
+var _spawn_pad_by_peer: Dictionary = {}
 
 # --- util ---
 func get_cell_id(x: int, y: int) -> String:
@@ -53,6 +58,25 @@ func spawn_loot(at: Vector3):
 		"initial_position": at,
 		"node_path": "res://entities/inventories/filing_cabinet.tscn"
 	})
+
+
+func ensure_spawn_pad_below_player(world_position: Vector3, peer_id: int) -> void:
+	var map := get_node_or_null("/root/game/Map") as Node3D
+	if map == null:
+		return
+	if _spawn_pad_by_peer.has(peer_id):
+		var old: Node = _spawn_pad_by_peer[peer_id]
+		if is_instance_valid(old):
+			old.queue_free()
+	_spawn_pad_by_peer.erase(peer_id)
+	var pad := Level0ChunkSurfaces.build_spawn_floor_pad(
+		Vector2(world_position.x, world_position.z),
+		spawn_pad_half_extent
+	)
+	pad.name = "SpawnPad_%d" % peer_id
+	map.add_child(pad)
+	_spawn_pad_by_peer[peer_id] = pad
+
 
 # --- chunks ---
 # locate the player position and render the chunks in view distance
@@ -83,6 +107,8 @@ func request_chunk(x: int, y: int):
 	else:
 		# Sender id is invalid after await; capture before async maze work.
 		var requester_id := multiplayer.get_remote_sender_id()
+		if requester_id == 0:
+			requester_id = multiplayer.get_unique_id()
 		var new_chunk: Array = []
 		await blobby_divide_region(new_chunk, get_blank_region(), x, y)
 		new_chunk.pick_random().is_loot_tile = true
@@ -93,8 +119,15 @@ func request_chunk(x: int, y: int):
 @rpc("authority", "call_local")
 func load_chunk(x: int, y: int, new_chunk_data: Array):
 	var chunk_id = get_cell_id(x, y)
-	# todo: add chunk as node3d to organize walls
-	
+	var map := get_node("/root/game/Map") as Node3D
+	var chunk_world := chunk_size * tile_size
+	var half := chunk_world * 0.5
+	var cx := x * tile_size + half
+	var cz := y * tile_size + half
+	var surf_root := Level0ChunkSurfaces.build(Vector2(cx, cz), half)
+	surf_root.name = "ChunkSurf_" + chunk_id.replace("/", "_")
+	map.add_child(surf_root)
+
 	for cell in new_chunk_data:
 		# one cell is 2x2
 		var pos_x = x*tile_size + tile_size*cell.x
@@ -103,22 +136,22 @@ func load_chunk(x: int, y: int, new_chunk_data: Array):
 			var wall_node: Level0Cell = wall.instantiate()
 			wall_node.position = Vector3(pos_x, 0, pos_y)
 			wall_node.wall_type = Level0Cell.WallType.north
-			get_node("/root/game/Map").add_child(wall_node)
+			map.add_child(wall_node)
 		if cell.south_wall:
 			var wall_node: Level0Cell = wall.instantiate()
 			wall_node.position = Vector3(pos_x, 0, pos_y)
 			wall_node.wall_type = Level0Cell.WallType.south
-			get_node("/root/game/Map").add_child(wall_node)
+			map.add_child(wall_node)
 		if cell.east_wall:
 			var wall_node: Level0Cell = wall.instantiate()
 			wall_node.position = Vector3(pos_x, 0, pos_y)
 			wall_node.wall_type = Level0Cell.WallType.east
-			get_node("/root/game/Map").add_child(wall_node)
+			map.add_child(wall_node)
 		if cell.west_wall:
 			var wall_node: Level0Cell = wall.instantiate()
 			wall_node.position = Vector3(pos_x, 0, pos_y)
 			wall_node.wall_type = Level0Cell.WallType.west
-			get_node("/root/game/Map").add_child(wall_node)
+			map.add_child(wall_node)
 			# todo: how am i going to make the server do this but not spawn it everywhere
 		if cell.is_loot_tile and NetworkService.is_authority():
 			spawn_loot(Vector3(pos_x, 0, pos_y))

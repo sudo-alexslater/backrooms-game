@@ -55,6 +55,8 @@ func _apply_local_spawn_at_random_point(log_prefix: String) -> void:
 	$InteractorComp.monitoring = true
 	$PlayerInventoryComp.inventory_gui_enabled = true
 	GameLogger.debug(log_prefix + str(spawnpoint))
+	if is_local_player:
+		LevelService.ensure_spawn_pad_below_player(position, multiplayer.get_unique_id())
 	_sync_position_if_multiplayer()
 
 func _physics_process(delta):
@@ -106,6 +108,8 @@ func respawn():
 	if is_local_player:
 		_apply_local_spawn_at_random_point("Respawning local player and setting position to: ")
 	else:
+		if has_meta("_spawn_pad_placed"):
+			remove_meta("_spawn_pad_placed")
 		GameLogger.debug("Respawning non-local player")
 	$Mesh.show()
 
@@ -143,6 +147,9 @@ func calculate_movement(delta):
 @rpc("unreliable_ordered", "any_peer")
 func update_position(input_position: Vector3):
 	position = input_position
+	if not is_local_player and not has_meta("_spawn_pad_placed"):
+		set_meta("_spawn_pad_placed", true)
+		LevelService.ensure_spawn_pad_below_player(input_position, String(name).to_int())
 
 const mouse_sens := .002
 func _input(event):
