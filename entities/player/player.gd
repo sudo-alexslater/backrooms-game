@@ -99,6 +99,16 @@ func to_dict():
 
 func get_inventory() -> EntityInventory:
 	return $PlayerInventoryComp/EntityInventory
+
+
+@rpc("authority", "reliable")
+func apply_inventory_drink(amount: int) -> void:
+	if not is_local_player:
+		return
+	var tc: Node = get_node_or_null("ThirstComponent")
+	if tc != null and tc.has_method("drink"):
+		tc.drink(amount)
+
 		
 # ==================
 # Death and respawn

@@ -3,26 +3,31 @@ extends Node
 const IDServiceScript = preload("res://services/id_service.gd")
 
 var all_item_datas: Dictionary = {
-	"bones": {
+	"almond_water": {
 		"quantity": 0,
 		"stackable": true,
-		"max_stack": 64,
-		"formatted_name": "Bones",
-		"icon_path": "res://items/resources/bones.png",
-		"item_id": "bones",
+		"max_stack": 8,
+		"formatted_name": "Almond Water",
+		"icon_path": "res://items/resources/almond_water.png",
+		"item_id": "almond_water",
 		"guid": ""
 	},
-	"medal": {
+	"coin": {
 		"quantity": 0,
 		"stackable": true,
-		"max_stack": 16,
-		"formatted_name": "Medal",
-		"icon_path": "res://items/resources/medal.png",
-		"item_id": "medal",
+		"max_stack": 999,
+		"formatted_name": "Coin",
+		"icon_path": "res://items/resources/coin.png",
+		"item_id": "coin",
 		"guid": ""
 	}
 }
 var items: Dictionary = {}
+
+## Thirst restored per drink (clamped by ThirstComponent.max_thirst on the player).
+const CONSUMABLE_THIRST_RESTORE: Dictionary = {
+	"almond_water": 60
+}
 
 
 func _sync_items() -> void:
@@ -127,3 +132,17 @@ func fetch_network_items() -> void:
 	if not NetworkService.is_authority():
 		return
 	update_item_list.rpc(get_items_serialised())
+
+
+## Authority: remove one unit from a stack; erases the item when quantity hits zero.
+func consume_one_from_stack(guid: String) -> bool:
+	if not NetworkService.is_authority():
+		return false
+	var item = get_item(guid)
+	if item == null or item.quantity <= 0:
+		return false
+	item.quantity -= 1
+	if item.quantity <= 0:
+		items.erase(guid)
+	_sync_items()
+	return true

@@ -2,6 +2,7 @@ extends Button
 class_name UIInventorySlot
 
 signal slot_activated(slot: Dictionary, button_index: int, shift_pressed: bool, ctrl_pressed: bool)
+signal slot_hover_changed(slot: Dictionary, hovering: bool, inventory: EntityInventory)
 
 ## Set by InventoryGrid for drag-and-drop between inventories.
 var bound_inventory: EntityInventory
@@ -17,6 +18,16 @@ var item_slot: Dictionary :
 
 func _ready() -> void:
 	focus_mode = Control.FOCUS_NONE
+	mouse_entered.connect(_on_mouse_entered)
+	mouse_exited.connect(_on_mouse_exited)
+
+
+func _on_mouse_entered() -> void:
+	slot_hover_changed.emit(item_slot, true, bound_inventory)
+
+
+func _on_mouse_exited() -> void:
+	slot_hover_changed.emit(item_slot, false, bound_inventory)
 
 
 func refresh() -> void:

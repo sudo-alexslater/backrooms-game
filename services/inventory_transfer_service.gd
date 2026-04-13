@@ -61,6 +61,16 @@ func _is_local_player_inventory(inv: EntityInventory) -> bool:
 	return lp.get_inventory() == inv
 
 
+func _inventory_owner_peer_id(inv: EntityInventory) -> int:
+	var holder: Node = inv.get_parent()
+	if holder == null:
+		return -1
+	var owner_node: Node = holder.get_parent()
+	if owner_node is Player:
+		return int(str(owner_node.name))
+	return -1
+
+
 func handle_ui_slot_input(inv: EntityInventory, slot: Dictionary, button_index: int, shift_pressed: bool, _ctrl_pressed: bool, context: Node) -> void:
 	if inv == null:
 		return
@@ -197,9 +207,26 @@ func request_seed_random_item_local(target_inventory_path: NodePath) -> void:
 		request_seed_random_item.rpc_id(1, target_inventory_path)
 
 
+func request_consume_item_local(inv: EntityInventory, slot: Dictionary) -> void:
+	if inv == null:
+		return
+	if not slot.has("item_guid") or str(slot.item_guid) == "":
+		return
+	request_slot_operation_local({
+		"type": "consume_item",
+		"path": inv.get_path(),
+		"row": int(slot.get("row", 0)),
+		"col": int(slot.get("col", 0)),
+		"guid": str(slot.item_guid)
+	})
+
+
 func _apply_slot_operation(op: Dictionary) -> void:
 	if not NetworkService.is_authority():
 		return
+	var requesting_peer_id := multiplayer.get_remote_sender_id()
+	if requesting_peer_id == 0:
+		requesting_peer_id = multiplayer.get_unique_id()
 	var t := str(op.get("type", ""))
 	match t:
 		"move_pair":
@@ -210,6 +237,8 @@ func _apply_slot_operation(op: Dictionary) -> void:
 			_apply_quick_stack(op)
 		"seed_random":
 			_apply_seed_random(op)
+		"consume_item":
+			_apply_consume_item(op, requesting_peer_id)
 		_:
 			GameLogger.error("Unknown inventory op: " + t)
 
@@ -224,6 +253,55 @@ func _apply_seed_random(op: Dictionary) -> void:
 	if guid == "":
 		return
 	inv.authority_place_item_first_free(guid)
+
+
+func _apply_consume_item(op: Dictionary, requesting_peer_id: int) -> void:
+	var path: NodePath = op.get("path", NodePath(""))
+	var row := int(op.get("row", 0))
+	var col := int(op.get("col", 0))
+	var guid := str(op.get("guid", ""))
+	var inv := get_node_or_null(path)
+	if not (inv is EntityInventory):
+		return
+	if not _is_local_player_inventory_for_peer(inv, requesting_peer_id):
+		return
+	if _inventory_owner_peer_id(inv) != requesting_peer_id:
+		return
+	if not _validate_slot_occupant(inv, row, col, guid):
+		return
+	var item := ItemService.get_item(guid)
+	if item == null:
+		return
+	var thirst_restore: Variant = ItemService.CONSUMABLE_THIRST_RESTORE.get(item.item_id, null)
+	if thirst_restore == null:
+		return
+
+	#  consume one, or bail
+	if not ItemService.consume_one_from_stack(guid):
+		return
+
+	#  update quantity or remove if depleted
+	if ItemService.get_item(guid) == null:
+		var ns := InventoryOps.remove_slot_with_guid(inv.slots, guid)
+		inv.update_slots(ns)
+	else:
+		inv.notify_display_refresh.rpc()
+
+	var amount := int(thirst_restore)
+	var player_node: Node = PlayerService.get_player_node_or_null(requesting_peer_id)
+	if player_node != null and player_node.has_method("apply_inventory_drink"):
+		# rpc_id to yourself errors unless call_local; host applies drink with a normal call.
+		if requesting_peer_id == multiplayer.get_unique_id():
+			player_node.apply_inventory_drink(amount)
+		else:
+			player_node.apply_inventory_drink.rpc_id(requesting_peer_id, amount)
+
+
+func _is_local_player_inventory_for_peer(inv: EntityInventory, peer_id: int) -> bool:
+	var p: Node = PlayerService.get_player_node_or_null(peer_id)
+	if p == null or not p.has_method("get_inventory"):
+		return false
+	return p.get_inventory() == inv
 
 
 func _apply_split(op: Dictionary) -> void:

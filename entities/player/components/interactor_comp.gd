@@ -8,6 +8,8 @@ func _ready():
 	return
 	
 func _physics_process(_delta):
+	if PlayerGui.has_open_dialog():
+		return
 	if Input.is_action_just_pressed("interact"):
 		initiate_interaction()
 

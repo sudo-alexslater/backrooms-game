@@ -12,11 +12,13 @@ var inventory_grid_node: InventoryGrid = $Window/Panel/MarginContainer/VBox/HBox
 var title = $Window/Panel/MarginContainer/VBox/Title
 
 var _paired_container: ItemInventoryComponent = null
+var _hovered: Dictionary = {}
 
 
 func _ready() -> void:
 	close()
 	refresh()
+	inventory_grid_node.inventory_slot_hover_changed.connect(_on_inventory_slot_hover)
 
 
 func _input(_event: InputEvent) -> void:
@@ -26,6 +28,10 @@ func _input(_event: InputEvent) -> void:
 			close()
 		else:
 			open()
+	if Input.is_action_just_pressed("interact") and $Window.visible and inventory_gui_enabled:
+		if _try_consume_hovered_item():
+			get_viewport().set_input_as_handled()
+			return
 	if Input.is_action_just_pressed("escape") and $Window.visible:
 		close()
 
@@ -105,5 +111,30 @@ func on_slot_activated(inventory: EntityInventory, slot: Dictionary, button_inde
 	InventoryTransferService.handle_ui_slot_input(inventory, slot, button_index, shift_pressed, ctrl_pressed, null)
 
 
+func _on_inventory_slot_hover(inv: EntityInventory, slot: Dictionary, hovering: bool) -> void:
+	if hovering:
+		_hovered = {"inv": inv, "slot": slot.duplicate(true)}
+	else:
+		_hovered = {}
+
+
+func _try_consume_hovered_item() -> bool:
+	if _hovered.is_empty():
+		return false
+	var inv: EntityInventory = _hovered.get("inv", null)
+	var slot: Dictionary = _hovered.get("slot", {})
+	if inv == null or slot.is_empty():
+		return false
+	var guid := str(slot.get("item_guid", ""))
+	if guid.is_empty():
+		return false
+	var item = ItemService.get_item(guid)
+	if item == null or not ItemService.CONSUMABLE_THIRST_RESTORE.has(item.item_id):
+		return false
+	InventoryTransferService.request_consume_item_local(inv, slot)
+	return true
+
+
 func _on_entity_inventory_updated() -> void:
+	_hovered = {}
 	refresh()

@@ -40,6 +40,7 @@ thirst = NodePath("../ThirstComponent")
 
 [node name="Name" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.49144, 0)
+billboard = 1
 
 [connection signal="thirst_changed" from="ThirstComponent" to="." method="_on_thirst_changed"]
 [connection signal="health_changed" from="HealthComponent" to="." method="_on_health_changed"]
